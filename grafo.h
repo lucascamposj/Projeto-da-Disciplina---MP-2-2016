@@ -3,11 +3,11 @@ typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
 
 typedef struct user{
-	char *nome;
+	char nome[100];
 	char genero;
 	unsigned int idade;
 	unsigned int escolaridade;
-	int cep[8];
+	unsigned int cep;
 	char *interesses[20];
 	/*Transações*/
 	int soma_aval;
@@ -46,28 +46,35 @@ typedef enum {
 p_grafo cria_grafo();
 
 /*destrói grafo g*/
-void destroi_grafo(tp_grafo *G);
+void destroi_grafo(p_grafo G);
 
 /*verifica se x e y sao adjacentes em G*/
-boolean adjacente(p_grafo *G, int x, int y);
+boolean adjacente(p_grafo G, int x, int y);
 
 /* retorna lista de todos os vértices que podem ser visitados a partir de x
 (existe uma aresta que vai de x para este vértice)*/
-void vizinhos(p_grafo *G,int x);
+void vizinhos(p_grafo G,int x);
 
 
 /*adiciona vértice x no grafo G*/
-boolean adiciona_vertice(p_grafo G, tp_user x);
+boolean adiciona_usuario(p_grafo G, tp_user x);
 
 
 /*remove vértice x do grafo G*/
-boolean remove_vertice(p_grafo G,char *x);
+boolean remove_usuario(p_grafo G,char *x);
 
 /*no grafo G adiciona uma aresta de x para y*/
 boolean adiciona_amizade(p_grafo G,char *x,char *y);
 
 /*remove a aresta que vai de x para y*/
 boolean remove_amizade(p_grafo G,char *x,char *y);
+
+boolean imprime_grafo(p_grafo G);
+
+boolean salva_grafo(p_grafo G);
+
+p_grafo carrega_grafo(FILE *arq);
+
 
 
 /*
