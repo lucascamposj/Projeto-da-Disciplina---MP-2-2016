@@ -8,9 +8,10 @@ int main(int argc, char const *argv[])
   int opcao = 0;
   char string_1[100], string_2[100];
   p_vertice vertice;
-  p_grafo G;
+  p_grafo G, G_teste;
   tp_user x, y;
 
+  G = carrega_grafo();
   while(opcao != -1){
     printf("******************************************\n");
     printf("*Qual teste deseja realizar?             *\n");
@@ -35,10 +36,10 @@ int main(int argc, char const *argv[])
       case 1:
         printf("\n* Opcao - Cria Grafo *\n");
 
-        G = cria_grafo();
+        G_teste = cria_grafo();
 
         /*Teste verifica se a alocação ocorreu de forma correta*/
-        if(G != NULL)
+        if(G_teste != NULL)
           printf("Passou no teste de alocacao - Alocacao efetivada\n");
         else
           printf("Falhou no teste de alocacao - Alocacao falhou\n");
@@ -172,6 +173,7 @@ int main(int argc, char const *argv[])
 
     }
   }
+  salva_grafo(G);
   destroi_grafo(G);
   return 0;
 }

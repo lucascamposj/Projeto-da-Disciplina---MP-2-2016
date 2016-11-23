@@ -3,7 +3,7 @@ typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
 
 typedef struct user{
-	char nome[100];
+	char nome[50];
 	char genero;
 	unsigned int idade;
 	unsigned int escolaridade;
@@ -73,7 +73,7 @@ boolean imprime_grafo(p_grafo G);
 
 boolean salva_grafo(p_grafo G);
 
-p_grafo carrega_grafo(FILE *arq);
+p_grafo carrega_grafo();
 
 
 

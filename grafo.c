@@ -482,10 +482,91 @@ boolean imprime_grafo(p_grafo G)
 
 boolean salva_grafo(p_grafo G)
 {
+	FILE *arq;
+	p_vertice v = G->head->prox;
+	p_aresta a = NULL;
 
+	arq = fopen("user.txt", "w");
+	while(v)
+	{
+		fprintf(arq, ".%s\n", v->usuario.nome);
+		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+		fprintf(arq, "*\n");
+		a = v->head->prox;
+		while(a){
+			fprintf(arq, "%s\n", a->amigo->usuario.nome);
+			a = a->prox;
+		}
+		fprintf(arq, "*\n");
+		v = v->prox;
+	}
+
+	fclose(arq);
+	return TRUE;
 }
 
-p_grafo carrega_grafo(FILE *arq)
+p_grafo carrega_grafo()
 {
+	FILE *arq;
+	p_grafo G = NULL;
+	tp_user user;
+	char nome[50], amigo[50];
+	p_aresta a = NULL;
 
+	G = cria_grafo();
+	if (!(arq = fopen("user.txt","r")))
+	{
+		printf("Arquivo não pode ser aberto\n");
+		return G;
+	}
+	else
+	{
+		if(fgetc(arq) != '.')
+			return G;
+		else
+		{
+			do{
+				fscanf(arq,"%s", user.nome);
+				fgetc(arq);
+				fscanf(arq,"%c", &user.genero);
+				fgetc(arq);
+				fscanf(arq,"%d", &user.idade);
+				fgetc(arq);
+				fscanf(arq,"%d", &user.escolaridade);
+				fgetc(arq);
+				fscanf(arq,"%d", &user.cep);
+				fgetc(arq);
+				if(fgetc(arq) == '*');
+					while(fgetc(arq) != '.'){
+						if(feof(arq))
+							break;
+					}
+				adiciona_usuario(G, user);
+			}while(!feof(arq));
+
+			fseek(arq, 0, SEEK_SET);
+			do{
+				if(fgetc(arq) == '.'){
+					fscanf(arq,"%s", nome);
+					while(fgetc(arq) != '*'){
+						if(feof(arq))
+							break;
+					}
+					fgetc(arq);
+					do{
+						fscanf(arq,"%s", amigo);
+						if(strcmp(amigo,"*"))
+							adiciona_amizade(G, nome, amigo);
+						else{ 
+							break;
+							fgetc(arq);
+						}
+						fgetc(arq);
+					}while(!feof(arq));
+				}
+			}while(!feof(arq));
+		}
+	}
+	fclose(arq);
+	return G;
 }
