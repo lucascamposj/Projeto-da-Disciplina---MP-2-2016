@@ -209,7 +209,7 @@ boolean adiciona_usuario(p_grafo G, tp_user x)
 boolean remove_usuario(p_grafo G, char *x)
 {
 	p_vertice v_aux = G->head->prox;
-	p_aresta a_aux = NULL;
+	p_aresta a_aux = NULL, a_aux2 = NULL;
 
 	assert(G);
 
@@ -222,12 +222,40 @@ boolean remove_usuario(p_grafo G, char *x)
 	else
 	{	// percorre o grafo removendo a amizade
 		a_aux = v_aux->head->prox;
-		while(a_aux){
+		while(a_aux)
+		{
+			a_aux2 = a_aux->amigo->head->prox;
+			/*percorrendo amigo e elimando amizade com o usuario*/
+			while(a_aux2)
+			{
+				if(a_aux2->amigo == v_aux)
+				{
+					if(a_aux2 == a_aux->amigo->ultimo)
+						a_aux->amigo->ultimo = a_aux2->ant;
+					else
+						a_aux2->prox->ant = a_aux2->ant;
+					a_aux2->ant->prox = a_aux2->prox;
+
+					free(a_aux2);
+					break;
+				}
+				a_aux2 = a_aux2->prox;
+			}
+			/*
 			remove_amizade(G, a_aux->amigo->usuario.nome, v_aux->usuario.nome);
-			if(a_aux)
-				a_aux = a_aux->prox;
+			*/
+			//aproveitando o a_aux2, eliminando o amigo da lista do usuario
+			if(a_aux == v_aux->ultimo)
+				v_aux->ultimo = a_aux->ant;
+			else
+				a_aux->prox->ant = a_aux->ant;
+			v_aux->ant->prox = v_aux->prox;
+
+			a_aux2 = a_aux;
+			a_aux = a_aux->prox;
+			free(a_aux2);
 		}
-		// eliminando o vértice
+		// eliminando o vértice no grafo
 		if(v_aux == G->ultimo)
 			G->ultimo = v_aux->ant;
 		else
@@ -321,7 +349,6 @@ boolean remove_amizade(p_grafo G,char *x, char *y)
 			free(a_aux);
 		}else
 			return FALSE;
-q
 		if((a_aux = pesquisa_aresta(v_y, x)) != NULL){
 			if(a_aux == v_y->ultimo)
 				v_y->ultimo = a_aux->ant;
