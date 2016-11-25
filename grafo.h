@@ -1,6 +1,7 @@
 typedef struct vertice* p_vertice;
 typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
+typedef struct transacao* p_transacao;
 
 typedef struct user{
 	char nome[50];
@@ -38,6 +39,20 @@ typedef struct grafo
 	p_vertice ultimo;
 
 } tp_grafo;
+
+typedef struct transacao
+{
+	char *trans;
+
+	p_trans ant;
+	p_trans prox;
+} tp_transacao;
+
+typedef struct lista_trans
+{
+	p_trans head;
+	p_trans ultimo;
+} tplista_transacao;
 
 typedef enum {
 	TRUE,FALSE
@@ -88,3 +103,24 @@ boolean vertice_vazio(p_vertice A);
 p_vertice pesquisa_vertice (p_grafo G, char *x);
 
 p_aresta pesquisa_aresta(p_vertice  V, char *x);
+
+/*
+	FUNCOES TRANSA
+*/
+
+p_trans cria_lista_trans();
+
+
+
+void imprime_transacoes();
+
+boolean cadastra_transacao();
+
+boolean remove_transacao();
+
+p_trans pesquisa_transacao();
+
+p_trans carrega_transacao();
+
+boolean salva_transacao();
+
