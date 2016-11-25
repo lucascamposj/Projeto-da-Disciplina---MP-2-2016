@@ -1,5 +1,5 @@
 all:
-	gcc -g -ftest-coverage -fprofile-arcs testa_grafo.c grafo.c -o exe
+	gcc -g menus_grafo.c grafo.c -o exe
 run:
 	./exe 
 

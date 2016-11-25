@@ -489,7 +489,11 @@ boolean salva_grafo(p_grafo G)
 	arq = fopen("user.txt", "w");
 	while(v)
 	{
-		fprintf(arq, ".%s\n", v->usuario.nome);
+		printf("strlen = %ld\n", strlen(v->usuario.nome));
+		fprintf(arq, ".");
+		for(int i=0;i<strlen(v->usuario.nome); i++)
+			fprintf(arq, "%c", v->usuario.nome[i]);
+		fprintf(arq,"\n");
 		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
 		fprintf(arq, "*\n");
 		a = v->head->prox;
