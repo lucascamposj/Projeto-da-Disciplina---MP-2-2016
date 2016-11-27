@@ -74,86 +74,6 @@ void destroi_grafo(p_grafo G)
 }
 
 /*******************************************************
-*Função: Adjacente
-*Descrição
-*	Verifica se dois vértices são adjacentes em um grafo.
-*Parâmetros
-*	G - Ponteiro para a estrutura de um grafo.
-*	x - Identificador de um vértice.
-*	y - Identificador de outro vértice.
-*Valor retornado
-*	Retorna um valor booleano que indica se os vértices de entrada são adjacentes ou não.
-*	True - são adjacentes.
-*	False -  não são adjacentes.
-*Assertiva de entrada
-*	O ponteiro G não pode ser NULL.
-*	Os vértices x e y não podem possuir o mesmo valor.
-*********************************************************/
-/*boolean adjacente(p_grafo G, int x, int y)
-{
-	p_vertice v_aux = G->head;
-	p_aresta a_aux;
-	int i;
-
-	assert(x != y);
-	assert(G);
-	/*Realiza duas vezes para conferir os dois casos x->y e y<-x */
-	/*for (i = 0; i < 2; ++i)
-	{
-		while(v_aux != NULL && v_aux->ch_vertice != x && v_aux->ch_vertice != y)
-			v_aux = v_aux->prox;
-		/*caso nao exista nem x, nem y*/
-		/*if(v_aux == NULL)
-			return FALSE;
-		else
-		{
-			a_aux = v_aux->primeiro;
-			while(a_aux != NULL && a_aux->vizinho->ch_vertice != x && a_aux->vizinho->ch_vertice != y)
-				a_aux = a_aux->prox;
-			if(a_aux != NULL)
-				return TRUE;
-		}
-		v_aux = v_aux->prox;
-	}
-	return FALSE;
-} 
-*/
-/*******************************************************
-*Função:
-*Descrição
-*	Imprime uma lista de todos os vértices que podem ser visitados a partir de x
-*(existe uma aresta que vai de x para este vértice).
-*Parâmetros
-*	G - Ponteiro para a estrutura de um grafo.
-*	x - Identificador de um vértice.
-*Assertiva de entrada
-*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
-*********************************************************/
-/*void vizinhos(p_grafo G,int x)
-{
-	p_vertice v_aux = G->primeiro;
-	p_aresta a_aux;
-
-	assert(G);
-
-	while(v_aux != NULL && v_aux->ch_vertice != x)
-		v_aux = v_aux->prox;
-	if(v_aux == NULL)
-	{
-		printf("Erro - Vertice nao encontrado\n");
-		return;
-	}
-	printf("Vertice %d: ", x);
-
-	a_aux = v_aux->primeiro;
-	while(a_aux != NULL)
-	{
-		printf("%d ",a_aux->vizinho->ch_vertice);
-		a_aux = a_aux->prox;
-	}
-}*/
-
-/*******************************************************
 *Função: Adiciona usuário
 *Descrição
 *	Adiciona um usuário a Rede Social.
@@ -161,7 +81,8 @@ void destroi_grafo(p_grafo G)
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - As informações do usuário(tipo estrutura user).
 *Assertiva de entrada
-*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL
+*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*	O nome do usuário não pode conter o caracter '*'.
 *Assertiva de saída
 *	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
@@ -193,6 +114,106 @@ boolean adiciona_usuario(p_grafo G, tp_user x)
 	else
 		/*usuario ja existe*/
 		return FALSE;
+}
+
+
+boolean edita_usuario(p_user user)
+{
+	char opcao, interesse[200];
+	boolean sair = FALSE;
+	int i, j;
+	do
+	{
+		sair = FALSE;
+		system("clear");
+	    printf("***************OPCOES DE EDICAO***********************\n");
+	    printf("*(1)Editar nome.                                     *\n");
+	    printf("*(2)Editar genero.                                   *\n");
+	    printf("*(3)Editar idade.                                    *\n");
+	    printf("*(4)Editar escolaridade.                             *\n");
+	    printf("*(5)Editar cep.                                      *\n");
+	    printf("*(6)Adicionar interesse.                             *\n");
+	    printf("*(7)Remover interesse.                               *\n");
+	    printf("*Para voltar digite x.                               *\n");
+	    printf("******************************************************\n");
+	    scanf("%c", &opcao);
+	    getchar();
+
+	    switch(opcao)
+	    {
+	    	case '1':
+	    		printf("Digite o novo nome: ");
+	    		scanf("%[^\n]s", user->nome);
+	    		getchar();
+	    		break;
+			
+			case '2':
+				printf("Digite o novo gênero: ");
+	    		scanf("%c", &user->genero);
+	    		getchar();
+				break;
+			
+			case '3':
+				printf("Digite a nova idade: ");
+	    		scanf("%d", &user->idade);
+
+				break;
+			
+			case '4':
+				printf("Digite a nova escolaridade: ");
+	    		scanf("%d", &user->escolaridade);
+
+				break;
+			
+			case '5':
+				printf("Digite o novo cep: ");
+	    		scanf("%d", &user->cep);
+
+				break;
+			
+			case '6':
+				if(user->n_interesses < 20)
+				{
+					printf("Digite um interesse: ");
+					scanf("%[^\n]s", user->interesses[user->n_interesses]);
+					getchar();
+					user->n_interesses++;
+				}
+				else
+				{
+					printf("Máximo de interesses atingido.\nDigite qualquer tecla para continuar edicao.");
+				}
+				break;
+			
+			case '7':
+				if(user->n_interesses > 0)
+				{
+					printf("Digite o interesse que deseja remover: ");
+					scanf("%[^\n]s", interesse);
+					getchar();
+					for(i=0;i < user->n_interesses;i++)
+					{
+						if(!strcmp(user->interesses[i], interesse))
+						{
+							for(j=i;j<user->n_interesses-1;j++)
+							{
+								strcpy(user->interesses[j], user->interesses[j+1]);
+							}
+							user->n_interesses--;
+							break;
+						}
+					}
+				}	
+				else
+					printf("Nao possui nenhum interesse.\nDigite qualquer tecla para continuar edicao.\n");
+				break;
+
+			case 'x':
+				sair = TRUE;
+				break;
+
+	    }
+	}while(sair == FALSE);
 }
 
 /*******************************************************
@@ -455,7 +476,7 @@ p_vertice pesquisa_vertice (p_grafo G, char *x){
 	}
 }
 /*******************************************************
-*Função: Pesquisa Aresta
+*Função: Pesquisa aresta
 *Descrição
 *	Realiza uma busca na lista de amizades de um dado usuário(caso ele exista), em busca de
 *	uma determinada amizade.
@@ -468,13 +489,15 @@ p_vertice pesquisa_vertice (p_grafo G, char *x){
 *	p - Ponteiro para o usuário com este nome(foi encontrada a amizade).
 *	NULL - Este nome não existe na lista de amizades deste usuário(não foi encontrado).
 *
-Assertiva de entrada
-*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*Assertiva de entrada
+*	V não pode ser NULL; deve estar inicializado.
+*	x deve ser diferente de NULL.			
 *********************************************************/
 p_aresta pesquisa_aresta(p_vertice  V, char *x){
 	p_aresta p = V->head->prox;
 
 	assert(V);
+	assert(x);
 
 	if(vertice_vazio(V) == FALSE){
 		while(p != NULL){
@@ -492,7 +515,18 @@ p_aresta pesquisa_aresta(p_vertice  V, char *x){
 		return NULL;
 	}
 }
-
+/*******************************************************
+*Função: Imprime grafo
+*Descrição
+*	Imprime todas as informações da rede social, bem como:
+*	Usuários, amizades e transações.
+*
+*Parâmetros
+*	G - ponteiro para estrutura grafo.	
+*
+*Assertiva de entrada
+*	o grafo deve estar inicializado.		
+*********************************************************/
 boolean imprime_grafo(p_grafo G)
 {
 	p_vertice v_aux = G->head->prox;
@@ -516,12 +550,24 @@ boolean imprime_grafo(p_grafo G)
 		v_aux = v_aux->prox;
 	}
 }
-
+/*******************************************************
+*Função: Salva grafo
+*Descrição
+*	Salva as informações da rede social(usuários e amizades) num arquivo(user.txt)
+*
+*Parâmetros
+*	G - ponteiro para estrutura grafo.	
+*
+*Assertiva de entrada
+*	o grafo deve estar inicializado.		
+*********************************************************/
 boolean salva_grafo(p_grafo G)
 {
 	FILE *arq;
 	p_vertice v = G->head->prox;
 	p_aresta a = NULL;
+	int i,j;
+
 
 	arq = fopen("user.txt", "w");
 	while(v)
@@ -532,10 +578,23 @@ boolean salva_grafo(p_grafo G)
 		for(int i=0;i<strlen(v->usuario.nome); i++)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
-		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+		fprintf(arq, "%c %d %d %d \n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+		
+		fprintf(arq, "%d\n", v->usuario.n_interesses);
+		
+		for(j=0;j<v->usuario.n_interesses;j++)
+		{	
+			fprintf(arq,"%ld", strlen(v->usuario.interesses[j]));
+			for(i=0;i<strlen(v->usuario.interesses[j]); i++)
+				fprintf(arq, "%c", v->usuario.interesses[j][i]);
+			fprintf(arq, "\n");
+		}	
+
 		fprintf(arq, "*\n");
 		a = v->head->prox;
-		while(a){
+		while(a)
+		{
+			fprintf(arq, "%ld", strlen(a->amigo->usuario.nome));
 			fprintf(arq, "%s\n", a->amigo->usuario.nome);
 			a = a->prox;
 		}
@@ -546,7 +605,14 @@ boolean salva_grafo(p_grafo G)
 	fclose(arq);
 	return TRUE;
 }
-
+/*******************************************************
+*Função: Carrega grafo
+*Descrição
+*	Lê o arquivo "user.txt" e armazena suas informações no grafo(rede social)
+*
+*Valor retornado
+*	G - Retorna o grafo contendo as informações do user.txt(rede social)		
+*********************************************************/
 p_grafo carrega_grafo()
 {
 	FILE *arq;
@@ -554,7 +620,7 @@ p_grafo carrega_grafo()
 	tp_user user;
 	char nome[50], amigo[50];
 	p_aresta a = NULL;
-	int size;
+	int size,i,j;
 	G = cria_grafo();
 	if (!(arq = fopen("user.txt","r")))
 	{
@@ -579,6 +645,14 @@ p_grafo carrega_grafo()
 				fgetc(arq);
 				fscanf(arq,"%d", &user.cep);
 				fgetc(arq);
+				fscanf(arq, "%d", &user.n_interesses);
+				fgetc(arq);
+				for(i=0;i<user.n_interesses;i++)
+				{
+					fscanf(arq, "%d", &size);
+					fgets(user.interesses[i], size+1, arq);
+					fgetc(arq);
+				}
 				if(fgetc(arq) == '*');
 					while(fgetc(arq) != '.'){
 						if(feof(arq))
@@ -590,14 +664,18 @@ p_grafo carrega_grafo()
 			fseek(arq, 0, SEEK_SET);
 			do{
 				if(fgetc(arq) == '.'){
-					fscanf(arq,"%s", nome);
-					while(fgetc(arq) != '*'){
+					fscanf(arq, "%d", &size);
+					fgets(nome, size+1, arq);
+					
+					while(fgetc(arq) != '*')
+					{
 						if(feof(arq))
 							break;
 					}
 					fgetc(arq);
 					do{
-						fscanf(arq,"%s", amigo);
+						fscanf(arq, "%d", &size);
+						fgets(amigo, size+1, arq);
 						if(strcmp(amigo,"*"))
 							adiciona_amizade(G, nome, amigo);
 						else{ 

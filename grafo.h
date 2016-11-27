@@ -2,6 +2,7 @@ typedef struct vertice* p_vertice;
 typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
 typedef struct transacao* p_transacao;
+typedef struct user *p_user;
 
 typedef struct user{
 	char nome[50];
@@ -9,7 +10,8 @@ typedef struct user{
 	unsigned int idade;
 	unsigned int escolaridade;
 	unsigned int cep;
-	char *interesses[20];
+	unsigned int n_interesses;
+	char interesses[20][200];
 	/*Transações*/
 	int soma_aval;
 	int quant_aval;
@@ -74,6 +76,7 @@ void vizinhos(p_grafo G,int x);
 /*adiciona vértice x no grafo G*/
 boolean adiciona_usuario(p_grafo G, tp_user x);
 
+boolean edita_usuario(p_user user);
 
 /*remove vértice x do grafo G*/
 boolean remove_usuario(p_grafo G,char *x);
@@ -105,7 +108,7 @@ p_vertice pesquisa_vertice (p_grafo G, char *x);
 p_aresta pesquisa_aresta(p_vertice  V, char *x);
 
 /*
-	FUNCOES TRANSA
+	FUNCOES TRANSACOES
 */
 
 p_transacao cria_lista_trans();
