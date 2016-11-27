@@ -12,6 +12,7 @@ int main(int argc, char const *argv[])
 	p_grafo G, G_teste;
   	tp_user new_user, y;
 	p_aresta a_user;
+	tp_user req_user;
 
 	G = carrega_grafo();
 	if(argc == 2)
@@ -42,12 +43,11 @@ int main(int argc, char const *argv[])
 						sair = FALSE;
 						break;
 					case '2':
-						/*jon snow*/
 						do{
 							sair = FALSE;
 							system("clear");
-							printf("***************Transações******************\n");
-							printf("*(1)Ver Transações Efetivadas             *\n");
+							printf("***************Transacoes******************\n");
+							printf("*(1)Ver Transacoes Efetivadas             *\n");
 							printf("*(2)Cadastrar Transação                   *\n");
 							printf("*(3)Descadastrar Transação                *\n");
 							printf("Para sair digite x.                       *\n");
@@ -57,7 +57,6 @@ int main(int argc, char const *argv[])
 							switch(opcao)
 							{
 								case '1':
-									
 									break;
 								case '2':
 									break;
@@ -205,7 +204,121 @@ int main(int argc, char const *argv[])
 			            	break;
 
 			            case '2':
-			            	/*TRANSAÇÕES*/
+				            do{	
+				            	sair = FALSE;
+				            	system("clear");
+				            	printf("********************TRANSACOES************************\n");
+					            printf("*(1)Ver transacoes pendentes.                        *\n");
+					            printf("*(2)Realizar uma transacao.                          *\n");
+					            printf("Para voltar digite x.                                *\n");
+					            printf("******************************************************\n");
+				            	scanf("%c", &opcao);
+				                getchar();
+				                switch(opcao)
+				                {
+				                	case '1':
+				            			
+				                		break;
+
+				                	case '2':
+				                		system("clear");
+				                		//Imprimir tipos de transação
+				                		//Escolher
+					            		do{	
+					            			system("clear");
+
+					            			req_user.idade = -1;
+					            			req_user.genero = 'x';
+					            			req_user.escolaridade = 0;
+					            			req_user.cep = 0;
+					            			req_user.n_interesses = 0;
+					            			req_user.quant_aval = 0;
+
+					            			printf("********************Requisitos************************\n");
+						            		printf("*(1)Idade                                            *\n");
+						           			printf("*(2)Genero                                           *\n");
+						           			printf("*(3)Nivel educacional                                *\n");
+						           			printf("*(4)CEP                                              *\n");
+						           			printf("*(5)Interesses                                       *\n");
+						           			printf("*(6)Avaliacao                                        *\n");
+						           			printf("*(7)Experiencia                                      *\n");
+						           			printf("*(8)Abrangencia                                      *\n");
+						            		printf("Para concluir digite x                               *\n");
+						            		printf("******************************************************\n");
+				                			scanf("%c", &opcao);
+				               				getchar();
+
+				               				switch(opcao){
+				               					case'1':
+				               						printf("Digite a idade requerida: ");
+				               						scanf("%d", &req_user.idade);
+					                    			getchar();
+
+				               						break;
+				               					case'2':
+				               						printf("\n**********************************\n");
+			        								printf("*(M)Masculino.                   *\n");
+			        								printf("*(F)Feminino.                    *\n");
+			        								printf("*(O)Outros.                      *\n");
+			       									printf("**********************************\n");
+				               						printf("Digite o genero requerido: ");
+				               						scanf("%c", &req_user.genero);
+					                    			getchar();
+
+				               						break;
+				               					case'3':
+				               						printf("\n**********************************\n");
+			       									printf("*(1)Primeiro grau incompleto.    *\n");
+			        								printf("*(2)Primeiro grau completo.      *\n");
+			        								printf("*(3)Segundo grau incompleto.     *\n");
+			        								printf("*(4)Segundo grau completo.       *\n");
+			       									printf("*(5)Superior incompleto.         *\n");
+			       									printf("*(6)Pos-graduacao.               *\n");
+			       									printf("**********************************\n");
+				               						printf("Digite o nivel educacional requerido: ");
+				               						scanf("%d", &req_user.escolaridade);
+					                    			getchar();
+
+				               						break;
+				               					case'4':
+				               						printf("Digite o CEP requerido: ");
+				               						scanf("%d", &req_user.cep);
+					                    			getchar();
+
+				               						break;
+				               					case'5':
+				               						printf("Digite o interesse requerido: ");
+				               						scanf("%[^\n]s", req_user.interesses[0]);
+					                    			getchar();
+
+				               						break;
+				               					case'6':
+				               						printf("Digite o grau de avaliação mínima (0 a 10): ");
+				               						req_user.quant_aval++;
+				               						scanf("%d", &req_user.soma_aval);
+					                    			getchar();
+
+				               						break;
+				               					case'7':
+
+				               						break;
+				               					case'8':
+
+				               						break;
+				               					case'x':
+
+				               						break;
+				               				}
+				                		}while(sair == FALSE);
+
+					            		sair = FALSE;
+				                		break;
+				                	case 'x':
+				                		sair = TRUE;
+				                		break;
+				                }
+					        }while(sair == FALSE);
+					        sair = FALSE;
 			            	break;
 			            
 			            case '3':
