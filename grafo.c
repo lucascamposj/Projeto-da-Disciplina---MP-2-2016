@@ -11,13 +11,11 @@
 *Função: Cria Grafo
 *Descrição
 *	Inicializa uma estrutura de um Grafo.
-*	Nomeia o grafo inicializado com a string de entrada.
 *Parâmetros
-*	nome - string referente ao nome do Grafo.
 *Valor retornado
 *	G - ponteiro para a estrutura Grafo inicializada.
 *Assertiva de entrada
-*	A variável nome não pode ter o valor NULL.
+* --------------------
 *Assertiva de saida
 *	O ponteiro G não pode ter valor NULL.
 *********************************************************/
@@ -156,14 +154,16 @@ void destroi_grafo(p_grafo G)
 }*/
 
 /*******************************************************
-*Função: Adiciona Vértice
+*Função: Adiciona usuário
 *Descrição
-*	Adiciona um vértice a um grafo.
+*	Adiciona um usuário a Rede Social.
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
-*	x - Indentificador de um vértice.
+*	x - As informações do usuário(tipo estrutura user).
 *Assertiva de entrada
-*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL
+*Assertiva de saída
+*	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
 
 boolean adiciona_usuario(p_grafo G, tp_user x)
@@ -196,14 +196,16 @@ boolean adiciona_usuario(p_grafo G, tp_user x)
 }
 
 /*******************************************************
-*Função: Remove Vértice 
+*Função: Remove Usuário 
 *Descrição
-*	Remove um vértice de um grafo. Além disso, realiza a liberação correta de memória.
+*	Remove um usuário da rede social. Além disso, realiza a liberação correta de memória.
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
-*	x - Indentificador de um vértice.
+*	x - nome do usuário a ser removido.
 *Assertiva de entrada
 *	A estrutura do grafo necessitar estar inicializada. G não pode possuir o valor NULL.
+*Assertiva de saída
+*	Remove o usuário da rede social, caso ele exista(checa se o nome existe no grafo).
 *********************************************************/
 
 boolean remove_usuario(p_grafo G, char *x)
@@ -271,14 +273,17 @@ boolean remove_usuario(p_grafo G, char *x)
 }
 
 /*******************************************************
-*Função: Adiciona Aresta
+*Função: Adiciona Amizade
 *Descrição
-*	Adiciona uma aresta entre dois vértices.
+*	Adiciona amizade entre dois usuários.
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
-*	x - Indentificador de um vértice.
+*	x - Nome de um dos usuários.
+*	Y - Nome do outro usuário.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*Assertiva de saída
+*	Adiciona amizade, tanto de x com y, quanto de y com x. Isso só é feito de x e y existem na rede social.
 *********************************************************/
 
 boolean adiciona_amizade(p_grafo G,char *x,char *y)
@@ -319,15 +324,17 @@ boolean adiciona_amizade(p_grafo G,char *x,char *y)
 }
 
 /*******************************************************
-*Função: Remove Aresta
+*Função: Remove Amizade
 *Descrição
-*	Remove aresta entre dois vértices.
+*	Remove amizade entre dois usuários.
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
-*	x - Identificador de um vértice.
-*	y - Identificador de outro vértice.
+*	x - Nome de um usuário.
+*	y - Nome de um usuário.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*Assertiva de saída
+*	Remove a amizade entre o usuário x e y, caso os 2 nomes existam na rede social.
 *********************************************************/
 
 boolean remove_amizade(p_grafo G,char *x, char *y)
@@ -376,8 +383,8 @@ boolean remove_amizade(p_grafo G,char *x, char *y)
 *Parâmetros
 *	G - Estrutura de um grafo.
 *Valor retornado
-*	Retorna um valor booleano que indica se o grafo está vazio ou não.
-*	True - caso o grafo esteja vazio.
+*	Retorna um valor booleano que indica se a rede socil está vazia ou não.
+*	True - caso a rede esteja vazia.
 *	False - caso contrário.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
@@ -393,7 +400,7 @@ boolean grafo_vazio(p_grafo G)
 /*******************************************************
 *Função: Vértice isolado
 *Descrição
-*	Verifica se um vértice não possui arestas.
+*	Verifica se um usuário não possui amizades.
 *Parâmetros
 *	A - Ponteiro para a estrutura de um vértice.
 *Valor retornado
@@ -410,7 +417,22 @@ boolean vertice_vazio(p_vertice A)
 	else
 		return FALSE;
 }
-
+/*******************************************************
+*Função: Pesquisa Vertice
+*Descrição
+*	Usada em outras funções, esta realiza uma busca na rede para verificar se, dado um nome, 
+*	existe um usuário com este nome.
+*Parâmetros
+*	G - Ponteiro para a estrutura de um grafo.
+*	x - Nome de um usuário.
+*
+*Valor retornado
+*	p - Ponteiro para o usuário com este nome(foi encontrado).
+*	NULL - Este nome não existe na rede social(não foi encontrado).
+*
+Assertiva de entrada
+*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*********************************************************/
 p_vertice pesquisa_vertice (p_grafo G, char *x){
 	p_vertice p = G->head->prox;
 
@@ -432,7 +454,23 @@ p_vertice pesquisa_vertice (p_grafo G, char *x){
 		return NULL;
 	}
 }
-
+/*******************************************************
+*Função: Pesquisa Aresta
+*Descrição
+*	Realiza uma busca na lista de amizades de um dado usuário(caso ele exista), em busca de
+*	uma determinada amizade.
+*
+*Parâmetros
+*	V - Ponteiro para o usuário.
+*	x - Nome de um usuário(suposta amizade).
+*
+*Valor retornado
+*	p - Ponteiro para o usuário com este nome(foi encontrada a amizade).
+*	NULL - Este nome não existe na lista de amizades deste usuário(não foi encontrado).
+*
+Assertiva de entrada
+*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*********************************************************/
 p_aresta pesquisa_aresta(p_vertice  V, char *x){
 	p_aresta p = V->head->prox;
 
@@ -460,7 +498,6 @@ boolean imprime_grafo(p_grafo G)
 	p_vertice v_aux = G->head->prox;
 	p_aresta a_aux;
 
-	printf("HEAD: %p | ant: %p | prox: %p\n", G->head,G->head->ant,G->head->prox);
 	while(v_aux)
 	{
 		printf("%s: %p | ant: %p | prox: %p\n", v_aux->usuario.nome,v_aux,v_aux->ant,v_aux->prox);
@@ -491,6 +528,7 @@ boolean salva_grafo(p_grafo G)
 	{
 		printf("strlen = %ld\n", strlen(v->usuario.nome));
 		fprintf(arq, ".");
+		fprintf(arq, "%ld", strlen(v->usuario.nome));
 		for(int i=0;i<strlen(v->usuario.nome); i++)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
@@ -516,7 +554,7 @@ p_grafo carrega_grafo()
 	tp_user user;
 	char nome[50], amigo[50];
 	p_aresta a = NULL;
-
+	int size;
 	G = cria_grafo();
 	if (!(arq = fopen("user.txt","r")))
 	{
@@ -530,7 +568,8 @@ p_grafo carrega_grafo()
 		else
 		{
 			do{
-				fscanf(arq,"%s", user.nome);
+				fscanf(arq, "%d", &size);
+				fgets(user.nome, size+1, arq);
 				fgetc(arq);
 				fscanf(arq,"%c", &user.genero);
 				fgetc(arq);

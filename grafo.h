@@ -44,14 +44,14 @@ typedef struct transacao
 {
 	char *trans;
 
-	p_trans ant;
-	p_trans prox;
+	p_transacao ant;
+	p_transacao prox;
 } tp_transacao;
 
 typedef struct lista_trans
 {
-	p_trans head;
-	p_trans ultimo;
+	p_transacao head;
+	p_transacao ultimo;
 } tplista_transacao;
 
 typedef enum {
@@ -108,7 +108,7 @@ p_aresta pesquisa_aresta(p_vertice  V, char *x);
 	FUNCOES TRANSA
 */
 
-p_trans cria_lista_trans();
+p_transacao cria_lista_trans();
 
 
 
@@ -118,9 +118,9 @@ boolean cadastra_transacao();
 
 boolean remove_transacao();
 
-p_trans pesquisa_transacao();
+p_transacao pesquisa_transacao();
 
-p_trans carrega_transacao();
+p_transacao carrega_transacao();
 
 boolean salva_transacao();
 

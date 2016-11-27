@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "grafo.h"
 #include <unistd.h>
+#include <string.h>
 
 int main(int argc, char const *argv[])
 {
@@ -13,8 +14,10 @@ int main(int argc, char const *argv[])
 	p_aresta a_user;
 
 	G = carrega_grafo();
-	if(!strcmp(argv[1], "admin")){
-		do{
+	if(!strcmp(argv[1], "admin"))
+	{
+		do
+		{
 			system("clear");
 			sair = FALSE;
 			printf("*****************************************\n");
@@ -25,13 +28,15 @@ int main(int argc, char const *argv[])
 			printf("*****************************************\n");
 			scanf("%c", &opcao);
 			getchar();
-			switch(opcao){
+			switch(opcao)
+			{
 				case '1':
 					system("clear");
 					printf("************Rede Social**********\n");
-					Imprime_Grafo(G);
+					imprime_grafo(G);
+					printf("\nPara sair digite qualquer tecla\n");
 
-					scanf("%c", c);
+					scanf("%c", &c);
 					sair = FALSE;
 					break;
 				case '2':
@@ -67,9 +72,10 @@ int main(int argc, char const *argv[])
 					sair = TRUE;
 					break;
 			}
-		while(sair == FALSE);
+		}while(sair == FALSE);
 	}
-	else{
+	else
+	{
 		do
 		{
 			sair = FALSE;
@@ -197,7 +203,7 @@ int main(int argc, char const *argv[])
 			        {
 			        	system("clear");
 			        	printf("Usuario nao existe.\n");
-			        
+			        	sleep(1);
 			        	system("clear");
 			        	sair = FALSE;
 			        }
@@ -226,14 +232,10 @@ int main(int argc, char const *argv[])
 
 			        sair = TRUE;
 			        break;
-
-			    default:
-			        printf("limpando tela... def: %c\n", opcao);
-			      
-			        system("clear");
-			        sair = FALSE;
 		    }
+
 		}while(sair == FALSE);
+	}
 	salva_grafo(G);
 	destroi_grafo(G);
 	return 0;
