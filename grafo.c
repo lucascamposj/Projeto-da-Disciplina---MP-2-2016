@@ -4,6 +4,9 @@
 #include <assert.h>
 #include "grafo.h"
 
+#define TRUE 1
+#define FALSE 0
+
 /*
 	FUNCOES
 */
@@ -90,7 +93,7 @@ void destroi_grafo(p_grafo G)
 *	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
 
-boolean adiciona_usuario(p_grafo G, tp_user x)
+int adiciona_usuario(p_grafo G, tp_user x)
 {
 	p_vertice p = G->head->prox;
 
@@ -134,10 +137,10 @@ boolean adiciona_usuario(p_grafo G, tp_user x)
 *	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
 
-boolean edita_usuario(p_user user)
+int edita_usuario(p_user user)
 {
 	char opcao, interesse[200];
-	boolean sair = FALSE;
+	int sair = FALSE;
 	int i, j;
 	do
 	{
@@ -247,7 +250,7 @@ boolean edita_usuario(p_user user)
 *	Remove o usuário da rede social, caso ele exista(checa se o nome existe no grafo).
 *********************************************************/
 
-boolean remove_usuario(p_grafo G, char *x)
+int remove_usuario(p_grafo G, char *x)
 {
 	p_vertice v_aux = G->head->prox;
 	p_aresta a_aux = NULL, a_aux2 = NULL;
@@ -325,7 +328,7 @@ boolean remove_usuario(p_grafo G, char *x)
 *	Adiciona amizade, tanto de x com y, quanto de y com x. Isso só é feito de x e y existem na rede social.
 *********************************************************/
 
-boolean adiciona_amizade(p_grafo G,char *x,char *y)
+int adiciona_amizade(p_grafo G,char *x,char *y)
 {
 	p_vertice v_x = G->head, v_y = NULL;
 	p_aresta a_aux;
@@ -377,7 +380,7 @@ boolean adiciona_amizade(p_grafo G,char *x,char *y)
 *	Remove a amizade entre o usuário x e y, caso os 2 nomes existam na rede social.
 *********************************************************/
 
-boolean remove_amizade(p_grafo G,char *x, char *y)
+int remove_amizade(p_grafo G,char *x, char *y)
 {
 	p_vertice v_x = NULL, v_y = NULL;
 	p_aresta a_aux;
@@ -425,13 +428,13 @@ boolean remove_amizade(p_grafo G,char *x, char *y)
 *Parâmetros
 *	G - Estrutura de um grafo.
 *Valor retornado
-*	Retorna um valor booleano que indica se a rede socil está vazia ou não.
+*	Retorna um valor into que indica se a rede socil está vazia ou não.
 *	True - caso a rede esteja vazia.
 *	False - caso contrário.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *********************************************************/
-boolean grafo_vazio(p_grafo G)
+int grafo_vazio(p_grafo G)
 {
 	if(G->head == G->ultimo) // se a célula cabeça é o fim do grafo
 		return TRUE;
@@ -446,13 +449,13 @@ boolean grafo_vazio(p_grafo G)
 *Parâmetros
 *	A - Ponteiro para a estrutura de um vértice.
 *Valor retornado
-*	Retorna um valor booleano que indica se um vértice não possui arestas.
+*	Retorna um valor into que indica se um vértice não possui arestas.
 *	True - Caso o vértice não possua arestas.
 *	False - Caso contrário.
 *Assertiva de entrada
 *	A estrutura do vértice necessita estar inicializada. A não pode possuir o valor NULL.
 *********************************************************/
-boolean vertice_vazio(p_vertice A)
+int vertice_vazio(p_vertice A)
 {
 	if(A->head == A->ultimo) // se a célula cabeça é o fim do grafo
 		return TRUE;
@@ -549,7 +552,7 @@ p_aresta pesquisa_aresta(p_vertice  V, char *x){
 *Assertiva de entrada
 *	o grafo deve estar inicializado.		
 *********************************************************/
-boolean imprime_grafo(p_grafo G)
+int imprime_grafo(p_grafo G)
 {
 	p_vertice v_aux = G->head->prox;
 	p_aresta a_aux;
@@ -566,10 +569,10 @@ boolean imprime_grafo(p_grafo G)
 		printf("\t%d\n", v_aux->usuario.escolaridade);
 		printf("\t%d\n", v_aux->usuario.cep);
 		printf("\tInteresses:\n");
-		for(i=0;i<v->aux->usuario.n_interesses;i++)
+		for(i = 0; i < v_aux->usuario.n_interesses; i++)
 		{
 			printf("\t");
-			puts(user->usuario.interesses[i]);
+			puts(v_aux->usuario.interesses[i]);
 		}
 		// imprime o endereço da lista de amizades 
 		printf("\t\tHEAD: %p | ant: %p | prox: %p\n", v_aux->head,v_aux->head->ant,v_aux->head->prox);
@@ -592,7 +595,7 @@ boolean imprime_grafo(p_grafo G)
 *Assertiva de entrada
 *	o grafo deve estar inicializado.		
 *********************************************************/
-boolean salva_grafo(p_grafo G)
+int salva_grafo(p_grafo G)
 {
 	FILE *arq;
 	p_vertice v = G->head->prox;
@@ -721,3 +724,4 @@ p_grafo carrega_grafo()
 	fclose(arq);
 	return G;
 }
+

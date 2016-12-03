@@ -1,7 +1,6 @@
 typedef struct vertice* p_vertice;
 typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
-typedef struct transacao* p_transacao;
 typedef struct user *p_user;
 
 typedef struct user{
@@ -42,31 +41,13 @@ typedef struct grafo
 
 } tp_grafo;
 
-typedef struct transacao
-{
-	char *trans;
-
-	p_transacao ant;
-	p_transacao prox;
-} tp_transacao;
-
-typedef struct lista_trans
-{
-	p_transacao head;
-	p_transacao ultimo;
-} tplista_transacao;
-
-typedef enum {
-	TRUE,FALSE
-} boolean;
-
 p_grafo cria_grafo();
 
 /*destrói grafo g*/
 void destroi_grafo(p_grafo G);
 
 /*verifica se x e y sao adjacentes em G*/
-boolean adjacente(p_grafo G, int x, int y);
+int adjacente(p_grafo G, int x, int y);
 
 /* retorna lista de todos os vértices que podem ser visitados a partir de x
 (existe uma aresta que vai de x para este vértice)*/
@@ -74,22 +55,22 @@ void vizinhos(p_grafo G,int x);
 
 
 /*adiciona vértice x no grafo G*/
-boolean adiciona_usuario(p_grafo G, tp_user x);
+int adiciona_usuario(p_grafo G, tp_user x);
 
-boolean edita_usuario(p_user user);
+int edita_usuario(p_user user);
 
 /*remove vértice x do grafo G*/
-boolean remove_usuario(p_grafo G,char *x);
+int remove_usuario(p_grafo G,char *x);
 
 /*no grafo G adiciona uma aresta de x para y*/
-boolean adiciona_amizade(p_grafo G,char *x,char *y);
+int adiciona_amizade(p_grafo G,char *x,char *y);
 
 /*remove a aresta que vai de x para y*/
-boolean remove_amizade(p_grafo G,char *x,char *y);
+int remove_amizade(p_grafo G,char *x,char *y);
 
-boolean imprime_grafo(p_grafo G);
+int imprime_grafo(p_grafo G);
 
-boolean salva_grafo(p_grafo G);
+int salva_grafo(p_grafo G);
 
 p_grafo carrega_grafo();
 
@@ -99,31 +80,10 @@ p_grafo carrega_grafo();
 	FUNCOES EXTRAS
 */
 
-boolean grafo_vazio(p_grafo G);
+int grafo_vazio(p_grafo G);
 
-boolean vertice_vazio(p_vertice A);
+int vertice_vazio(p_vertice A);
 
 p_vertice pesquisa_vertice (p_grafo G, char *x);
 
 p_aresta pesquisa_aresta(p_vertice  V, char *x);
-
-/*
-	FUNCOES TRANSACOES
-*/
-
-p_transacao cria_lista_trans();
-
-
-
-void imprime_transacoes();
-
-boolean cadastra_transacao();
-
-boolean remove_transacao();
-
-p_transacao pesquisa_transacao();
-
-p_transacao carrega_transacao();
-
-boolean salva_transacao();
-

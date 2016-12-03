@@ -4,6 +4,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include "trans.h"
+#include <assert.h>
+
+#define TRUE 1
+#define FALSE 0
+
 int main(int argc, char const *argv[])
 {
 	int  menu = 1, sair = FALSE, i, j;
@@ -13,8 +19,11 @@ int main(int argc, char const *argv[])
   	tp_user new_user, y;
 	p_aresta a_user;
 	tp_user req_user;
+	p_listatrans transacoes;
+	FILE *arq;
 
 	G = carrega_grafo();
+	transacoes = carrega_trans();
 	if(argc == 2)
 	{
 		if(!strcmp(argv[1], "admin"))
@@ -43,6 +52,7 @@ int main(int argc, char const *argv[])
 						sair = FALSE;
 						break;
 					case '2':
+
 						do{
 							sair = FALSE;
 							system("clear");
@@ -57,10 +67,40 @@ int main(int argc, char const *argv[])
 							switch(opcao)
 							{
 								case '1':
+										assert(arq = fopen("historico.txt","r"));
+										
+										printf("Transacoes:\n");
+										while(!feof(arq)){
+											if(c = fgetc(arq) != '/')
+												printf("%c", c);
+											else
+												printf(" ");
+										}
+										fclose(arq);
+									printf("Digite qualquer tecla para voltar.\n");
+									getchar();
 									break;
 								case '2':
+									printf("Digite a transação que deseja inserir: ");
+									scanf("%[^\n]s",string_1);
+									getchar();
+									if(cadastra_trans(transacoes, string_1) == TRUE)
+										printf("Transacoes inserida com sucesso\n");
+									else
+										printf("Falha ao inserir transacao. Verifique se a transacao ja nao existe\n");
+									printf("Digite qualquer tecla para voltar.\n");
+									getchar();
 									break;
 								case '3':
+									printf("Digite a transação que deseja descadastrar: ");
+									scanf("%[^\n]s",string_1);
+									getchar();
+									if(remove_trans(transacoes, string_1) == TRUE)
+										printf("Transacoes retirada com sucesso\n");
+									else
+										printf("Falha ao retirar transacao. Verifique se a transacao existe\n");
+									printf("Digite qualquer tecla para voltar.\n");
+									getchar();
 									break;
 								case 'x':
 									sair = TRUE;
@@ -412,6 +452,8 @@ int main(int argc, char const *argv[])
 		}while(sair == FALSE);
 	}
 	salva_grafo(G);
+	salva_trans(transacoes);
+	destroi_trans(transacoes);
 	destroi_grafo(G);
 	return 0;
 }
