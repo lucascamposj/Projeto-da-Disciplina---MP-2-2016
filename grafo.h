@@ -1,3 +1,5 @@
+#include "trans.h"
+
 typedef struct vertice* p_vertice;
 typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
@@ -11,7 +13,10 @@ typedef struct user{
 	unsigned int cep;
 	unsigned int n_interesses;
 	char interesses[20][200];
-	/*Transações*/
+	/*INSERIR TIPO GRAFO E 2 LISTAS; AS LISTAS PODEM SER DO MESMO TIPO*/
+	tp_grafo_trans grafoT;
+	tp_listaT listaT_req;
+	tp_listaT listaT_his;
 	int soma_aval;
 	int quant_aval;
 } tp_user;
@@ -39,7 +44,7 @@ typedef struct grafo
 	p_vertice head;
 	p_vertice ultimo;
 
-} tp_grafo;
+}tp_grafo;
 
 p_grafo cria_grafo();
 

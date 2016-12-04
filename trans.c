@@ -25,7 +25,7 @@ p_listatrans cria_lista_trans(){
 }
 
 p_listatrans carrega_trans(){
-	char *s; //string auxiliar
+	char s[50]; //string auxiliar
 	p_listatrans lista;
 	int size; //tamanho da string
 	int i;
@@ -45,6 +45,7 @@ p_listatrans carrega_trans(){
 		fclose(arq);
 	}else
 		return NULL;
+	
 	return lista;
 }
 
@@ -83,7 +84,10 @@ int remove_trans(p_listatrans T, char *s){
 		else
 			x->prox->ant = x->ant;
 		x->ant->prox = x->prox;
+		
 		free(x);
+
+		return TRUE;
 	}else
 		return FALSE;// não existe a transacao
 
@@ -107,20 +111,35 @@ int salva_trans(p_listatrans T){
 
 	if(arq = fopen("trans.txt","w")){
 		while(p){
-			printf("%d", (int)strlen(p->trans));
+			fprintf(arq,"%d", (int)strlen(p->trans));
 			fputs(p->trans,arq);
 			fprintf(arq,"\n");
 			p = p->prox;
 		}
 	}
+	fclose(arq);
 }
 
 void destroi_trans(p_listatrans T){
 	p_transacao p = T->head, p2 = NULL;
 	while(p){
-		p2 = p->prox;
-		free(p);
-		p = p2; 
+		p2 = p;
+		p = p->prox;
+		free(p2);
 	}
+
 	free(T);
+
+}
+
+void imprime_trans(p_listatrans T)
+{
+	p_transacao p = T->head->prox;
+
+	while(p)
+	{
+		printf("%s.\n", p->trans);
+
+		p = p->prox;
+	}
 }

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include "trans.h"
 #include <assert.h>
 
 #define TRUE 1
@@ -12,7 +11,7 @@
 
 int main(int argc, char const *argv[])
 {
-	int  menu = 1, sair = FALSE, i, j;
+	int  menu = 1, sair = FALSE, i, j, op, ex;
 	char string_1[50], string_2[50], opcao, c;
 	p_vertice user, amigo;
 	p_grafo G, G_teste;
@@ -262,9 +261,24 @@ int main(int argc, char const *argv[])
 
 				                	case '2':
 				                		system("clear");
-				                		//Imprimir tipos de transação
-				                		//Escolher
+
+				                		do
+				                		{
+				                			system("clear");
+					                		printf("\n**********************************\n");
+					                		imprime_trans(transacoes);
+					                		printf("Digite x para sair.\n");
+					                		printf("\n**********************************\n");
+					                		printf("Digite o nome da transacao: ");
+					                		scanf("%[^\n]s", string_1);
+					                		getchar();
+				                		}while(!pesquisa_trans(transacoes, string_1) && strcmp(string_1,"x"));
+
 					            		do{	
+
+					            			if(!strcmp(string_1, "x"))
+					            				break;
+
 					            			system("clear");
 
 					            			req_user.idade = -1;
@@ -285,12 +299,13 @@ int main(int argc, char const *argv[])
 						           			printf("*(8)Abrangencia                                      *\n");
 						            		printf("Para concluir digite x                               *\n");
 						            		printf("******************************************************\n");
+				                			printf("Digite uma opcao valida: ");
 				                			scanf("%c", &opcao);
 				               				getchar();
 
 				               				switch(opcao){
 				               					case'1':
-				               						printf("Digite a idade requerida: ");
+				               						printf("Digite a idade mínima: ");
 				               						scanf("%d", &req_user.idade);
 					                    			getchar();
 
@@ -328,6 +343,7 @@ int main(int argc, char const *argv[])
 				               						break;
 				               					case'5':
 				               						printf("Digite o interesse requerido: ");
+				               						req_user.n_interesses = 1;
 				               						scanf("%[^\n]s", req_user.interesses[0]);
 					                    			getchar();
 
@@ -340,13 +356,39 @@ int main(int argc, char const *argv[])
 
 				               						break;
 				               					case'7':
+				               						printf("\n**********************************\n");
+				               						printf("*(1)Sim.                          *\n");
+				               						printf("*(2)Nao.                          *\n");
+				               						printf("\n**********************************\n");
+			       									do
+			       									{
+			       										printf("Digite se deseja experiencia: ");
+			       										scanf("%d", &ex);
+					                    				getchar();
+
+			       										
+			       									}while(op < 1 && op > 2);
 
 				               						break;
 				               					case'8':
+				               						printf("\n**********************************\n");
+			       									printf("*(1)Apenas amigos.               *\n");
+			        								printf("*(2)Amigos de amigos.            *\n");
+			        								printf("*(3)Qualquer um.                 *\n");
+			       									printf("**********************************\n");
+			       									do
+			       									{
+			       										printf("Digite o nivel de abrangencia: ");
+			       										scanf("%d", &op);
+					                    				getchar();
+
+			       										
+			       									}while(op < 1 && op > 3);
 
 				               						break;
 				               					case'x':
-
+				               						buscarequisitos(G,req_user,user,op,ex,string_1);
+				               						sair = TRUE;
 				               						break;
 				               				}
 				                		}while(sair == FALSE);
