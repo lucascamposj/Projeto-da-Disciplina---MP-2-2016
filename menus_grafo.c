@@ -5,6 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+
 #define TRUE 1
 #define FALSE 0
 
@@ -246,8 +247,9 @@ int main(int argc, char const *argv[])
 				            	sair = FALSE;
 				            	system("clear");
 				            	printf("********************TRANSACOES************************\n");
-					            printf("*(1)Ver transacoes pendentes.                        *\n");
-					            printf("*(2)Realizar uma transacao.                          *\n");
+					            printf("*(1)Ver transacoes pedidas                           *\n");
+					            printf("*(2)Ver convites de transacoes                       *\n");
+					            printf("*(3)Realizar uma transacao.                          *\n");
 					            printf("Para voltar digite x.                                *\n");
 					            printf("******************************************************\n");
 				            	scanf("%c", &opcao);
@@ -255,10 +257,31 @@ int main(int argc, char const *argv[])
 				                switch(opcao)
 				                {
 				                	case '1':
-				            			
+				            			imprime_grafoT(user->grafoT);
+				            			printf("*****************************************************\n");
+				            			printf("Deseja aceitar alguma transacao? (Digite S para sim ou qualquer outra tecla para voltar)\n");
+				            			scanf("%c", &opcao);
+				            			switch(opcao){
+				            				case 'S':
+				            					printf("Digite o a transacao que deseja realizar\n");
+				            					scanf("%[^\n]s", string_1);
+				            					printf("Digite o nome do usuario\n");
+				            					scanf("%[^\n]s", string_2);
+				            					if(finalizar_trans(G, user->grafoT,string_1,string_2)){
+				            						printf("Transacao realizada.\n");
+				            						sleep(2);
+				            					}else{
+				            						printf("Erro ao realizar transacao\n");
+				            						sleep(2);
+				            					}
+				            				break;
+				            			}
+				            			printf("\n");
 				                		break;
-
 				                	case '2':
+
+				                		break;
+				                	case '3':
 				                		system("clear");
 
 				                		do

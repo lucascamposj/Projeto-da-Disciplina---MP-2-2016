@@ -18,7 +18,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO(v_aux->usuario.listaT_req,user->usuario.nome, trans);
+				adicionaNO(*(v_aux->usuario.listaT_req),user->usuario.nome, trans);
 			}
 
 			v_aux = v_aux->prox;
@@ -30,7 +30,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(a_aux->amigo, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO(a_aux->amigo->usuario.listaT_req,user->usuario.nome, trans);
+				adicionaNO(*(a_aux->amigo->usuario.listaT_req),user->usuario.nome, trans);
 			}	
 
 			if(abran == 2)
@@ -40,7 +40,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 				{
 					if(verifica_requisitos(a_aux2->amigo, req_user, xp, trans) == TRUE)
 					{
-						adicionaNO(a_aux2->amigo->usuario.listaT_req,user->usuario.nome, trans);
+						adicionaNO(*(a_aux2->amigo->usuario.listaT_req), user->usuario.nome, trans);
 					}		
 				}
 			}
@@ -48,14 +48,13 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 			a_aux = a_aux->prox;
 		}
 	}
-
 }
 
 
 int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 {
 	int flag, i;
-	p_noT T_aux = user->usuario.listaT_his.head->prox;
+	p_noT T_aux = user->usuario.listaT_his->head->prox;
 
 	if(user->usuario.idade < req_user.idade && user->usuario.idade!=-1)
 		return FALSE;
@@ -98,3 +97,6 @@ int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 	return TRUE;
 }
 
+int finalizar_trans(p_grafo G, p_grafo_trans G_trans, char *trans, char *nome){
+		
+}

@@ -1,6 +1,23 @@
-.5lucas
-M 19 6 8888888 
-1
-10jogar tudo
+.12Lucas Campos
+M 19 4 12345678 
+3
+3BF1
+22The last of us Part II
+7Fifa 17
 *
+carona/fulano
+aluguel/fulano2/....../...
+compra/fulan3/....../...
+venda/fula4/....../...
+*
+/*pessoas que querem meu serviço*/
+tipo/fulano
+tipo/fulano2
+*
+/*meu historico*/
+tipo/fulano/0(ainda n avaliou)
+tipo/fulano/1(avaliou)
+*
+lucas
+obi-wan
 *

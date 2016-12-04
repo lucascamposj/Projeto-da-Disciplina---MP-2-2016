@@ -600,7 +600,10 @@ int salva_grafo(p_grafo G)
 	FILE *arq;
 	p_vertice v = G->head->prox;
 	p_aresta a = NULL;
-	int i,j;
+	p_verticeT vt_aux; 
+	p_arestaT  at_aux;
+	p_noT no;
+ 	int i,j;
 
 
 	arq = fopen("user.txt", "w");
@@ -621,8 +624,31 @@ int salva_grafo(p_grafo G)
 			for(i=0;i<strlen(v->usuario.interesses[j]); i++)
 				fprintf(arq, "%c", v->usuario.interesses[j][i]);
 			fprintf(arq, "\n");
-		}	
-
+		}
+		fprintf(arq, "*\n");
+		vt_aux = v->usuario.grafoT->head->prox;
+		while(vt_aux){
+			fprintf(arq, "%s", vt_aux->trans);
+			at_aux = vt_aux->head->prox;
+			while(at_aux){
+				fprintf(arq,"/%s", at_aux->nome);
+				at_aux = at_aux->prox;
+			}
+			fprintf(arq, "\n");
+			vt_aux = vt_aux->prox;
+		}
+		fprintf(arq, "*\n");
+		no = v->usuario->listaT_req->head->prox;
+		while(no){
+			fprintf(arq, "%s/%s\n", no->trans, no->nome);
+			no = no->prox;
+		}
+		fprintf(arq, "*\n");
+		no = v->usuario->listaT_his->head->prox;
+		while(no){
+			fprintf(arq, "%s/%s/\n", no->trans, no->nome, no->aval);
+			no = no->prox;
+		}
 		fprintf(arq, "*\n");
 		a = v->head->prox;
 		while(a)
@@ -651,9 +677,14 @@ p_grafo carrega_grafo()
 	FILE *arq;
 	p_grafo G = NULL;
 	tp_user user;
-	char nome[50], amigo[50];
+	char nome[50], amigo[50], c;
 	p_aresta a = NULL;
 	int size,i,j;
+	char s[50], trans[50];
+	p_listaT listaT;
+	p_verticeT verticeT; 
+	p_noT no;
+
 	G = cria_grafo();
 	if (!(arq = fopen("user.txt","r")))
 	{
@@ -686,11 +717,75 @@ p_grafo carrega_grafo()
 					fgets(user.interesses[i], size+1, arq);
 					fgetc(arq);
 				}
-				if(fgetc(arq) == '*');
-					while(fgetc(arq) != '.'){
-						if(feof(arq))
-							break;
+				fgetc(arq); //pega separador
+				fgetc(arq);
+				user.grafoT = cria_grafo_T();
+				c = 0;
+				while(!feof(arq))
+				{
+					i = 0;	
+					while((c = fgetc(arq)) != '/' && c != '\n'){
+						s[i] = c;
+						i++;
 					}
+					s[i] = '\0';
+					if(s[0] == '*')
+						break;
+					verticeT = adiciona_vertice_T(user.grafoT, s);
+					while(c != '\n'){
+						i = 0;
+						while((c = fgetc(arq)) != '/' && c != '\n'){
+							s[i] = c;
+							i++;
+						}
+						s[i] = '\0';
+						adiciona_aresta_T(user.grafoT, verticeT->trans, s);
+					}
+				}
+				fgetc(arq);
+				c = 0;
+			
+				user.listaT_req = cria_listaT();
+				while(!feof(arq)){
+					i = 0;
+					while((c = fgetc(arq)) != '/' && c != '\n'){
+						trans[i] = c;
+						i++;
+					}
+					if(trans[0] == '*')
+						break;
+					trans[i] = '\0';
+					i = 0;
+					while((c = fgetc(arq)) != '\n'){
+						nome[i] = c;
+						i++;
+					}
+					nome[i] = '\0';
+					adicionaNO(*user.listaT_req, trans, nome);
+				}
+				user.listaT_his = cria_listaT();
+				while(!feof(arq)){
+					i = 0;
+					while((c = fgetc(arq)) != '/' && c != '\n'){
+						trans[i] = c;
+						i++;
+					}
+					if(trans[0] == '*')
+						break;
+					trans[i] = '\0';
+					i = 0;
+					while((c = fgetc(arq)) != '/'){
+						nome[i] = c;
+						i++;
+					}
+					nome[i] = '\0';
+					no = adicionaNO(*user.listaT_his, trans, nome);
+					fscanf(arq,"%d",&no->aval);
+				}
+				while(fgetc(arq) != '.'){
+					if(feof(arq))
+						break;
+				}
 				adiciona_usuario(G, user);
 			}while(!feof(arq));
 
@@ -699,12 +794,12 @@ p_grafo carrega_grafo()
 				if(fgetc(arq) == '.'){
 					fscanf(arq, "%d", &size);
 					fgets(nome, size+1, arq);
-					
-					while(fgetc(arq) != '*')
-					{
-						if(feof(arq))
-							break;
-					}
+					for(i = 0; i < 4; i++)
+						while(fgetc(arq) != '*')
+						{
+							if(feof(arq))
+								break;
+						}
 					fgetc(arq);
 					do{
 						fscanf(arq, "%d", &size);

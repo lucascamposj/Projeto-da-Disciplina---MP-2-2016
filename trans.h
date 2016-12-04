@@ -94,23 +94,30 @@ p_transacao pesquisa_trans(p_listatrans, char *);
 
 void imprime_trans(p_listatrans);
 
-/*GRAFO
+/*GRAFO*/
 
-criagrafoT()
+p_grafo_trans cria_grafo_T();
 
-destroigrafoT()
+void destroi_grafo_T(p_grafo_trans T)
 
-insereverticeT
+p_verticeT pesquisa_verticeT(p_grafo_trans, char *);
 
-inserearestaT
+p_verticeT adiciona_vertice_T(p_grafo_trans, char *);
 
-destroigrafoT
+void adiciona_aresta_T(p_grafo_trans, char *, char *);
 
-removeverticeT(remove tudo desse vertice)
+void remove_vertice_T(p_grafo_trans, char *);
 
-*/
+void imprime_grafoT(p_grafo_trans );
 
-p_noT adicionaNO(tp_listaT lista_req, char *nome, char *trans);
-void destroi_T(p_listaT T);
-int remove_T(p_listaT T, char *s);
-p_noT pesquisa_T(p_listaT T, char *s);
+/*LISTA*/
+
+p_noT adicionaNO(tp_listaT, char *, char *);
+
+void destroi_T(p_listaT );
+
+int remove_T(p_listaT , char *s);
+
+p_noT pesquisa_T(p_listaT , char *s);
+
+p_listaT cria_listaT();
