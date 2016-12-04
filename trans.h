@@ -1,9 +1,11 @@
+
 typedef struct transacao* p_transacao;
 typedef struct lista_trans* p_listatrans;
 typedef struct grafo_trans* p_grafo_trans;
 typedef struct verticeT* p_verticeT;
 typedef struct arestaT* p_arestaT;
 typedef struct noT* p_noT;
+typedef struct listaT* p_listaT;
 
 
 typedef struct transacao
@@ -57,6 +59,7 @@ typedef struct noT
 {
 	char trans[50];
 	char pessoa[50];
+	int aval;//representa na lista de historico se o usuario ja foi avaliado ou nao
 
 	p_noT prox;
 	p_noT ant;
@@ -107,11 +110,7 @@ removeverticeT(remove tudo desse vertice)
 
 */
 
-/*LISTA
-
-crialistaT()
-destroilistaT()
-adicionaNO
-removeNO
-
-*/
+p_noT adicionaNO(tp_listaT lista_req, char *nome, char *trans);
+void destroi_T(p_listaT T);
+int remove_T(p_listaT T, char *s);
+p_noT pesquisa_T(p_listaT T, char *s);

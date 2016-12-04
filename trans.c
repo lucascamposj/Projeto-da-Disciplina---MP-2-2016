@@ -143,3 +143,67 @@ void imprime_trans(p_listatrans T)
 		p = p->prox;
 	}
 }
+
+p_noT adicionaNO(tp_listaT lista_req, char *nome, char *trans)
+{
+	p_noT T_aux = lista_req.head->prox;
+	T_aux = (p_noT)malloc(sizeof(tp_noT)); // aloca-se espaço para esse no
+	assert(T_aux); // checa se foi de fato alocado espaço
+
+
+	lista_req.ultimo->prox = T_aux;
+	T_aux->ant = lista_req.ultimo;
+	lista_req.ultimo = T_aux;
+	T_aux->prox = NULL;
+
+	strcpy(T_aux->trans,trans);
+	strcpy(T_aux->pessoa,nome);
+
+
+	return T_aux;
+
+/*VERIFICAR SE PODE HAVER REPETIÇÃO DE PEDIDOS DO MESMO TIPO DE TRANSAÇÃO*/
+}
+
+void destroi_T(p_listaT T){
+	p_noT p = T->head, p2 = NULL;
+	while(p){
+		p2 = p;
+		p = p->prox;
+		free(p2);
+	}
+
+	free(T);
+
+}
+
+int remove_T(p_listaT T, char *s){
+	p_noT x;
+
+	assert(T);
+
+	if(x = pesquisa_T(T, s)){
+		if(x == T->ultimo)
+			T->ultimo = x->ant;
+		else
+			x->prox->ant = x->ant;
+		x->ant->prox = x->prox;
+		
+		free(x);
+
+		return TRUE;
+	}else
+		return FALSE;// não existe a transacao
+}
+
+p_noT pesquisa_T(p_listaT T, char *s){
+	p_noT p = T->head->prox;
+
+	assert(T);
+	while(p){
+		if(!strcmp(s, p->trans))
+			return p;
+		p = p->prox;
+	}
+	return NULL;
+}

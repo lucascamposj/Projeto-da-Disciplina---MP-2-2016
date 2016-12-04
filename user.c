@@ -1,8 +1,8 @@
-#include "user.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "user.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -18,7 +18,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO(v_aux->usuario->listaT_req,user->usuario.nome, trans);
+				adicionaNO(v_aux->usuario.listaT_req,user->usuario.nome, trans);
 			}
 
 			v_aux = v_aux->prox;
@@ -30,7 +30,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(a_aux->amigo, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO(a_aux->amigo->usuario->listaT_req,user->usuario.nome, trans);
+				adicionaNO(a_aux->amigo->usuario.listaT_req,user->usuario.nome, trans);
 			}	
 
 			if(abran == 2)
@@ -40,7 +40,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 				{
 					if(verifica_requisitos(a_aux2->amigo, req_user, xp, trans) == TRUE)
 					{
-						adicionaNO(a_aux2->amigo->usuario->listaT_req,user->usuario.nome, trans);
+						adicionaNO(a_aux2->amigo->usuario.listaT_req,user->usuario.nome, trans);
 					}		
 				}
 			}
@@ -55,7 +55,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 {
 	int flag, i;
-	p_noT T_aux = user->listaT_his->head->prox;
+	p_noT T_aux = user->usuario.listaT_his.head->prox;
 
 	if(user->usuario.idade < req_user.idade && user->usuario.idade!=-1)
 		return FALSE;
@@ -98,13 +98,3 @@ int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 	return TRUE;
 }
 
-void adicionaNO(p_listaT lista_req, char *nome, char *trans)
-{
-	p_listaT T_aux = lista_req->;
-
-	lista_req->ultimo 
-
-
-/*VERIFICAR SE PODE HAVER REPETIÇÃO DE PEDIDOS DO MESMO TIPO DE TRANSAÇÃO*/
-
-}

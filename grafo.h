@@ -1,5 +1,4 @@
 #include "trans.h"
-
 typedef struct vertice* p_vertice;
 typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
