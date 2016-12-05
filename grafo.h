@@ -15,10 +15,9 @@ typedef struct user{
 	char interesses[20][200];
 	int soma_aval;
 	int quant_aval;
-
 	p_grafo_trans grafoT;
-	p_listaT listaT_req;
 	int n_req;
+	p_listaT listaT_req;
 	p_listaT listaT_his;
 } tp_user;
 

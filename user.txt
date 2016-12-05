@@ -1,23 +1,18 @@
-.12Lucas Campos
-M 19 4 12345678 
-3
-3BF1
-22The last of us Part II
-7Fifa 17
+.7obi wan
+M 99 6 0 
+1
+18converter o anakin
 *
-carona/fulano
-aluguel/fulano2/....../...
-compra/fulan3/....../...
-venda/fula4/....../...
 *
-/*pessoas que querem meu serviço*/
-tipo/fulano
-tipo/fulano2
 *
-/*meu historico*/
-tipo/fulano/0(ainda n avaliou)
-tipo/fulano/1(avaliou)
 *
-lucas
-obi-wan
+*
+.5obama
+M 55 6 123123213 
+1
+13matar o trump
+*
+*
+*
+*
 *

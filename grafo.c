@@ -68,6 +68,9 @@ void destroi_grafo(p_grafo G)
 			free(a_aux2); // libera essa aresta(amizade)
 		}
 		free(v_aux->head); // libera a célula cabeça desse vértice(usuário)
+		destroi_T(v_aux->usuario.listaT_req);
+		destroi_T(v_aux->usuario.listaT_his);
+		destroi_grafo_T(v_aux->usuario.grafoT);
 		v_aux2 = v_aux;
 		v_aux = v_aux->prox;
 		free(v_aux2); // libere o véritce(usuário)
@@ -109,6 +112,9 @@ int adiciona_usuario(p_grafo G, tp_user x)
 
 		p->usuario = x;
 
+		p->usuario.grafoT = cria_grafo_T();
+		p->usuario.listaT_req = cria_listaT();
+		p->usuario.listaT_his = cria_listaT();
 		p->head = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a célula cabeça para a sua lista de arestas(amizades)
 		assert(p->head); // checa se foi de fato alocado espaço
 		p->ultimo = p->head;
@@ -631,22 +637,22 @@ int salva_grafo(p_grafo G)
 			fprintf(arq, "%s", vt_aux->trans);
 			at_aux = vt_aux->head->prox;
 			while(at_aux){
-				fprintf(arq,"/%s", at_aux->nome);
+				fprintf(arq,"/%s", at_aux->pessoa);
 				at_aux = at_aux->prox;
 			}
 			fprintf(arq, "\n");
 			vt_aux = vt_aux->prox;
 		}
 		fprintf(arq, "*\n");
-		no = v->usuario->listaT_req->head->prox;
+		no = v->usuario.listaT_req->head->prox;
 		while(no){
-			fprintf(arq, "%s/%s\n", no->trans, no->nome);
+			fprintf(arq, "%s/%s\n", no->trans, no->pessoa);
 			no = no->prox;
 		}
 		fprintf(arq, "*\n");
-		no = v->usuario->listaT_his->head->prox;
+		no = v->usuario.listaT_his->head->prox;
 		while(no){
-			fprintf(arq, "%s/%s/\n", no->trans, no->nome, no->aval);
+			fprintf(arq, "%s/%s/%d\n", no->trans, no->pessoa, no->aval);
 			no = no->prox;
 		}
 		fprintf(arq, "*\n");
@@ -730,7 +736,10 @@ p_grafo carrega_grafo()
 					}
 					s[i] = '\0';
 					if(s[0] == '*')
+					{
+						fgetc(arq);
 						break;
+					}
 					verticeT = adiciona_vertice_T(user.grafoT, s);
 					while(c != '\n'){
 						i = 0;
@@ -761,7 +770,7 @@ p_grafo carrega_grafo()
 						i++;
 					}
 					nome[i] = '\0';
-					adicionaNO(*user.listaT_req, trans, nome);
+					adicionaNO(user.listaT_req, trans, nome);
 				}
 				user.listaT_his = cria_listaT();
 				while(!feof(arq)){
@@ -779,7 +788,7 @@ p_grafo carrega_grafo()
 						i++;
 					}
 					nome[i] = '\0';
-					no = adicionaNO(*user.listaT_his, trans, nome);
+					no = adicionaNO(user.listaT_his, trans, nome);
 					fscanf(arq,"%d",&no->aval);
 				}
 				while(fgetc(arq) != '.'){

@@ -98,12 +98,21 @@ void adiciona_aresta_T(p_grafo_trans T, char *trans, char *nome)
 	p_arestaT a_aux;
 	p_verticeT v;
 
-	if(v = pesquisa_verticeT(T, trans)){
+	if(v = pesquisa_verticeT(T, trans))
+	{
 		a_aux = (p_arestaT)malloc(sizeof(tp_arestaT)); // aloca-se a aresta(amizade)
 		assert(a_aux); // checa se foi alocada
 		a_aux->ant = v->ultimo; // faz o encadeamento
 		v->ultimo->prox = a_aux;
+		v->ultimo = a_aux;
+		strcpy(a_aux->pessoa,nome);
 		a_aux->prox = NULL;
+	}
+	else
+	{
+		adiciona_vertice_T(T, trans);
+		adiciona_aresta_T(T, trans, nome);
+
 	}
 }
 
@@ -270,16 +279,16 @@ void imprime_trans(p_listatrans T)
 
 /*LISTA*/
 
-p_noT adicionaNO(tp_listaT lista_req, char *nome, char *trans)
+p_noT adicionaNO(p_listaT lista_req, char *trans, char *nome)
 {
-	p_noT T_aux = lista_req.head->prox;
+	p_noT T_aux;
 	T_aux = (p_noT)malloc(sizeof(tp_noT)); // aloca-se espaço para esse no
 	assert(T_aux); // checa se foi de fato alocado espaço
 
 
-	lista_req.ultimo->prox = T_aux;
-	T_aux->ant = lista_req.ultimo;
-	lista_req.ultimo = T_aux;
+	T_aux->ant = lista_req->ultimo;
+	lista_req->ultimo->prox = T_aux;
+	lista_req->ultimo = T_aux;
 	T_aux->prox = NULL;
 
 	strcpy(T_aux->trans,trans);
@@ -301,12 +310,11 @@ void destroi_T(p_listaT T){
 	free(T);
 }
 
-int remove_T(p_listaT T, char *s){
-	p_noT x;
-
+int remove_T(p_listaT T, p_noT x){
+	
 	assert(T);
 
-	if(x = pesquisa_T(T, s)){
+	if(x){
 		if(x == T->ultimo)
 			T->ultimo = x->ant;
 		else

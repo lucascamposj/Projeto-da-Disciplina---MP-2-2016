@@ -1,2 +1,4 @@
-6Carona
-7Aluguel
+6carona
+7aluguel
+5venda
+6viagem

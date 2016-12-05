@@ -98,7 +98,7 @@ void imprime_trans(p_listatrans);
 
 p_grafo_trans cria_grafo_T();
 
-void destroi_grafo_T(p_grafo_trans T)
+void destroi_grafo_T(p_grafo_trans T);
 
 p_verticeT pesquisa_verticeT(p_grafo_trans, char *);
 
@@ -112,12 +112,14 @@ void imprime_grafoT(p_grafo_trans );
 
 /*LISTA*/
 
-p_noT adicionaNO(tp_listaT, char *, char *);
+p_noT adicionaNO(p_listaT, char *, char *);
 
 void destroi_T(p_listaT );
 
-int remove_T(p_listaT , char *s);
+int remove_T(p_listaT , p_noT);
 
 p_noT pesquisa_T(p_listaT , char *s);
 
 p_listaT cria_listaT();
+
+void imprime_listaT(p_listaT, int);
