@@ -118,7 +118,7 @@ void destroi_T(p_listaT );
 
 int remove_T(p_listaT , p_noT);
 
-p_noT pesquisa_T(p_listaT , char *s);
+p_noT pesquisa_T(p_listaT , char *s, int);
 
 p_listaT cria_listaT();
 

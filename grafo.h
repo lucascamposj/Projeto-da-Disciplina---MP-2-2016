@@ -92,3 +92,5 @@ int vertice_vazio(p_vertice A);
 p_vertice pesquisa_vertice (p_grafo G, char *x);
 
 p_aresta pesquisa_aresta(p_vertice  V, char *x);
+
+void imprime_tudo(p_grafo);

@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
 	p_noT no;
 
 	G = carrega_grafo();
+	imprime_tudo(G);
 	transacoes = carrega_trans();
 	if(argc == 2)
 	{
@@ -111,6 +112,7 @@ int main(int argc, char const *argv[])
 									break;
 							}
 						}while(sair == FALSE);
+						
 						sair = FALSE;
 						break;
 					case 'x':
@@ -263,14 +265,15 @@ int main(int argc, char const *argv[])
 				                switch(opcao)
 				                {
 				                	case '1':
+				            			printf("****************************\n");
 				            			imprime_grafoT(user->usuario.grafoT);
-				            			printf("*****************************************************\n");
-				            			printf("Deseja realizar alguma transacao? (Digite S para sim ou qualquer outra tecla para voltar)\n");
+				            			printf("****************************\n");
+				            			printf("Deseja realizar alguma transacao? \n(S)Sim\n Digite qualquer tecla para voltar.\n");
 				            			scanf("%c", &opcao);
 				            			getchar();
 				            			switch(opcao){
 				            				case 'S':
-				            					printf("Digite o a transacao que deseja realizar:\n");
+				            					printf("Digite a transacao que deseja realizar:\n");
 				            					scanf("%[^\n]s", string_1);
 				            					getchar();
 
@@ -290,9 +293,10 @@ int main(int argc, char const *argv[])
 				            			printf("\n");
 				                		break;
 				                	case '2':
+										printf("*******************************************\n");
 										imprime_listaT(user->usuario.listaT_req, 0);
-										printf("****************************************************************************************\n");
-										printf("Deseja aceitar alguma transacao? (Digite S para sim ou qualquer outra tecla para voltar)\n");				            			
+										printf("*******************************************\n");
+										printf("Deseja aceitar alguma transacao?\n (S)Sim\n Digite qualquer tecla para voltar.\n");				            			
 				                		scanf("%c", &opcao);
 				                		getchar();
 
@@ -306,17 +310,14 @@ int main(int argc, char const *argv[])
 				                				scanf("%[^\n]s", string_2);
 												getchar();
 
-				                				if(no = pesquisa_T(user->usuario.listaT_req, string_1))
+				                				if(no = pesquisa_T(user->usuario.listaT_req, string_1, 0))
 				            					{
 				            						amigo = pesquisa_vertice(G, string_2);
 
 				            						adiciona_aresta_T(amigo->usuario.grafoT, string_1, user->usuario.nome);
 
-													if((no = pesquisa_T(user->usuario.listaT_req, string_1))) // checa se, na lista de requerimentos desse usuário, existia essa transação como pendente
-													{
-														if(!strcmp(no->pessoa, amigo->usuario.nome)) // checa se o nome é o mesmo
-															remove_T(user->usuario.listaT_req, no);
-													}
+													if(!strcmp(no->pessoa, amigo->usuario.nome)) // checa se o nome é o mesmo
+														remove_T(user->usuario.listaT_req, no);
 				            					}
 
 				            					break;
@@ -330,8 +331,10 @@ int main(int argc, char const *argv[])
 				                		{
 				                			system("clear");
 					                		printf("\n**********************************\n");
+					                		printf("\nTransacoes possiveis.           \n\n");
+
 					                		imprime_trans(transacoes);
-					                		printf("Digite x para sair.\n");
+					                		printf("\nDigite x para sair.\n");
 					                		printf("\n**********************************\n");
 					                		printf("Digite o nome da transacao: ");
 					                		scanf("%[^\n]s", string_1);
@@ -463,9 +466,10 @@ int main(int argc, char const *argv[])
 				                		break;
 
 				                	case '4':
+				                		printf("*****************************\n");
 				                		imprime_listaT(user->usuario.listaT_his, 1);
-				                		printf("****************************************************************************************\n");
-				            			printf("Deseja avaliar algum usuario? (Digite S para sim ou qualquer outra tecla para voltar)\n");
+				                		printf("*****************************\n");
+				            			printf("Deseja avaliar algum usuario que nao foi avaliado?\n (S)Sim\n Qualquer outra tecla para voltar.\n");
 				            			scanf("%c", &opcao);
 				            			getchar();
 				            			switch(opcao)
@@ -477,12 +481,12 @@ int main(int argc, char const *argv[])
 				            					printf("Digite a transacao correspondente: ");
 				            					scanf("%[^\n]s", string_2);
 				            					getchar();
-				            					if(no = pesquisa_T(user->usuario.listaT_his, string_2))
+				            					if(no = pesquisa_T(user->usuario.listaT_his, string_2, 1))
 				            					{
 				            						amigo = pesquisa_vertice(G, string_1);
 				            						printf("Digite a nota(0 a 10): ");
 				            						scanf("%d", &nota);
-
+				            						no->aval = 1;
 				            						amigo->usuario.soma_aval+=nota;
 				            						amigo->usuario.quant_aval++;
 				            						printf("Avaliacao concluida.\n");
@@ -497,6 +501,7 @@ int main(int argc, char const *argv[])
 				                		break;
 				                }
 					        }while(sair == FALSE);
+					        
 					        sair = FALSE;
 			            	break;
 			            

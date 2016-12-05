@@ -1,18 +1,23 @@
-.7obi wan
-M 99 6 0 
+.3obi
+M 122 6 3212 
 1
-18converter o anakin
+9converter
 *
+aluguel/obama/lucas/joao
 *
+aluguel/obama
 *
+aluguel/obama/0
 *
+5obama
 *
 .5obama
-M 55 6 123123213 
+M 4343 6 542123 
 1
-13matar o trump
+5matar
 *
 *
 *
 *
+3obi
 *

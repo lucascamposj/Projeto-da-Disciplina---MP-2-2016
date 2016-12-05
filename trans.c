@@ -328,15 +328,27 @@ int remove_T(p_listaT T, p_noT x){
 		return FALSE;// não existe a transacao
 }
 
-p_noT pesquisa_T(p_listaT T, char *s){
+p_noT pesquisa_T(p_listaT T, char *s, int aval){
 	p_noT p = T->head->prox;
 
 	assert(T);
-	while(p){
-		if(!strcmp(s, p->trans))
-			return p;
-		p = p->prox;
+	if(!aval)
+	{
+		while(p){
+			if(!strcmp(s, p->trans))
+				return p;
+			p = p->prox;
+		}
 	}
+	else
+	{
+		while(p){
+			if(!strcmp(s, p->trans) && !p->aval)
+				return p;
+			p = p->prox;
+		}
+	}
+
 	return NULL;
 }
 

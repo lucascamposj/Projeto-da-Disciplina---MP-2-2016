@@ -112,9 +112,9 @@ int adiciona_usuario(p_grafo G, tp_user x)
 
 		p->usuario = x;
 
-		p->usuario.grafoT = cria_grafo_T();
-		p->usuario.listaT_req = cria_listaT();
-		p->usuario.listaT_his = cria_listaT();
+		p->usuario.grafoT = x.grafoT;
+		p->usuario.listaT_req = x.listaT_req;
+		p->usuario.listaT_his = x.listaT_his;
 		p->head = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a célula cabeça para a sua lista de arestas(amizades)
 		assert(p->head); // checa se foi de fato alocado espaço
 		p->ultimo = p->head;
@@ -334,7 +334,7 @@ int remove_usuario(p_grafo G, char *x)
 *	Adiciona amizade, tanto de x com y, quanto de y com x. Isso só é feito de x e y existem na rede social.
 *********************************************************/
 
-int adiciona_amizade(p_grafo G,char *x,char *y)
+int adiciona_amizade(p_grafo G,char *x, char *y)
 {
 	p_vertice v_x = G->head, v_y = NULL;
 	p_aresta a_aux;
@@ -735,9 +735,8 @@ p_grafo carrega_grafo()
 						i++;
 					}
 					s[i] = '\0';
-					if(s[0] == '*')
+					if(s[0] == '*' || s[0] == '0')
 					{
-						fgetc(arq);
 						break;
 					}
 					verticeT = adiciona_vertice_T(user.grafoT, s);
@@ -751,9 +750,9 @@ p_grafo carrega_grafo()
 						adiciona_aresta_T(user.grafoT, verticeT->trans, s);
 					}
 				}
-				fgetc(arq);
+				
 				c = 0;
-			
+
 				user.listaT_req = cria_listaT();
 				while(!feof(arq)){
 					i = 0;
@@ -761,7 +760,7 @@ p_grafo carrega_grafo()
 						trans[i] = c;
 						i++;
 					}
-					if(trans[0] == '*')
+					if(trans[0] == '*' || trans[0] == '0')
 						break;
 					trans[i] = '\0';
 					i = 0;
@@ -772,6 +771,7 @@ p_grafo carrega_grafo()
 					nome[i] = '\0';
 					adicionaNO(user.listaT_req, trans, nome);
 				}
+
 				user.listaT_his = cria_listaT();
 				while(!feof(arq)){
 					i = 0;
@@ -783,13 +783,14 @@ p_grafo carrega_grafo()
 						break;
 					trans[i] = '\0';
 					i = 0;
-					while((c = fgetc(arq)) != '/'){
+					while((c = fgetc(arq)) != '/' && c != EOF){
 						nome[i] = c;
 						i++;
 					}
 					nome[i] = '\0';
 					no = adicionaNO(user.listaT_his, trans, nome);
 					fscanf(arq,"%d",&no->aval);
+					fgetc(arq);
 				}
 				while(fgetc(arq) != '.'){
 					if(feof(arq))
@@ -804,7 +805,7 @@ p_grafo carrega_grafo()
 					fscanf(arq, "%d", &size);
 					fgets(nome, size+1, arq);
 					for(i = 0; i < 4; i++)
-						while(fgetc(arq) != '*')
+						while((c = fgetc(arq)) != '*')
 						{
 							if(feof(arq))
 								break;
@@ -829,3 +830,83 @@ p_grafo carrega_grafo()
 	return G;
 }
 
+void imprime_tudo(p_grafo G)
+{
+	p_vertice v_aux = G->head->prox;
+	p_aresta a_aux;
+	p_arestaT at_aux;
+	p_verticeT vt_aux;
+	p_noT no;
+	int i;
+
+	while(v_aux)
+	{
+		// imprime o nome e o endereço desse usuário, bem como o endereço do usuário anteror e posterior
+		printf("%s: %p | ant: %p | prox: %p\n", v_aux->usuario.nome,v_aux,v_aux->ant,v_aux->prox); 
+		// imprime as informações deste usuário(genero, idade, escolaridade, cep, interesses)
+		printf("\t%c\n", v_aux->usuario.genero);
+		printf("\t%d\n", v_aux->usuario.idade);
+		printf("\t%d\n", v_aux->usuario.escolaridade);
+		printf("\t%d\n", v_aux->usuario.cep);
+		printf("\tInteresses:\n");
+		for(i = 0; i < v_aux->usuario.n_interesses; i++)
+		{
+			printf("\t");
+			puts(v_aux->usuario.interesses[i]);
+		}
+		
+		vt_aux = v_aux->usuario.grafoT->head->prox;
+		printf("\tGRAFO DE PEDIDOS\n");
+		while(vt_aux)
+		{
+			at_aux = vt_aux->head->prox;
+
+			printf("\t\t%s\n", vt_aux->trans);
+			printf("\t\t\t");
+			while(at_aux)
+			{	
+				printf("%s  ", at_aux->pessoa);
+
+				at_aux = at_aux->prox;
+			}
+
+			printf("\n");
+			
+			vt_aux = vt_aux->prox;
+		}
+
+		printf("\tLISTA DE REQUERIDOS\n");
+		no = v_aux->usuario.listaT_req->head->prox;
+		while(no)
+		{
+			printf("\t\t%s/%s\n", no->trans, no->pessoa);
+
+
+			no = no->prox;
+		}
+
+		printf("\tLISTA HISTORICO\n");
+		no = v_aux->usuario.listaT_his->head->prox;
+		while(no)
+		{
+			printf("\t\t%s/%s\n", no->trans, no->pessoa);
+
+
+			no = no->prox;
+		}
+		printf("\tAMIZADES\n");
+		// imprime o endereço da lista de amizades 
+		printf("\t\tHEAD: %p | ant: %p | prox: %p\n", v_aux->head,v_aux->head->ant,v_aux->head->prox);
+		
+		a_aux = v_aux->head->prox;
+		
+		while(a_aux)
+		{
+			printf("\t\t%s: %p | ant: %p | prox: %p\n",a_aux->amigo->usuario.nome,a_aux,a_aux->ant,a_aux->prox);
+			a_aux = a_aux->prox;
+		}
+
+		v_aux = v_aux->prox;
+	}	
+
+}

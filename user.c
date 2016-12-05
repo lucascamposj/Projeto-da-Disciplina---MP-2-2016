@@ -18,7 +18,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO((v_aux->usuario.listaT_req),user->usuario.nome, trans);
+				adicionaNO((v_aux->usuario.listaT_req),trans, user->usuario.nome);
 			}
 
 			v_aux = v_aux->prox;
@@ -30,7 +30,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 		{
 			if(verifica_requisitos(a_aux->amigo, req_user, xp, trans) == TRUE)
 			{
-				adicionaNO((a_aux->amigo->usuario.listaT_req),user->usuario.nome, trans);
+				adicionaNO((a_aux->amigo->usuario.listaT_req),trans, user->usuario.nome);
 			}	
 
 			if(abran == 2)
@@ -40,7 +40,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 				{
 					if(verifica_requisitos(a_aux2->amigo, req_user, xp, trans) == TRUE)
 					{
-						adicionaNO((a_aux2->amigo->usuario.listaT_req), user->usuario.nome, trans);
+						adicionaNO((a_aux2->amigo->usuario.listaT_req),trans, user->usuario.nome);
 					}		
 				}
 			}
@@ -114,7 +114,7 @@ int finalizar_trans(p_grafo G, p_vertice user,char *trans, char *nome)
 
 		while(v_aux2) // percorre a lista de vértices
 		{
-			if((no = pesquisa_T(v_aux2->usuario.listaT_req, trans))) // checa se, na lista de requerimentos desse usuário, existia essa transação como pendente
+			if((no = pesquisa_T(v_aux2->usuario.listaT_req, trans, 0))) // checa se, na lista de requerimentos desse usuário, existia essa transação como pendente
 			{
 				if(!strcmp(no->pessoa, user->usuario.nome)) // checa se o nome é o mesmo
 					remove_T(v_aux2->usuario.listaT_req , no);
@@ -176,7 +176,9 @@ void imprime_listaT(p_listaT T, int flag)
 	{
 		printf("%s: %s", no->trans, no->pessoa);
 		if(flag && !no->aval)
-			printf("(Avalie o usuario)");
+			printf("(Avalie o usuario.)");
+		else if(flag && no->aval)
+			printf("(Transacao ja avaliada.)\n");
 		printf("\n");
 		no = no->prox;
 	}
