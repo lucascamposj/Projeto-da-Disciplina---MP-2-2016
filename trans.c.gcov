@@ -1,0 +1,917 @@
+        -:    0:Source:trans.c
+        -:    0:Programs:3
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "trans.h"
+        -:    6:
+        -:    7:#define TRUE 1
+        -:    8:#define FALSE 0
+        -:    9:
+        -:   10:/*GRAFO*/
+        -:   11:
+        -:   12:/*******************************************************
+        -:   13:*Função: Cria grafo de transação de um usuário
+        -:   14:*Descrição
+        -:   15:*	Cria um grafo que irá conter as transação(e pessoas) que aceitaram uma
+        -:   16:*	uma transação que este usuário pediu(mas não aceitou ainda).
+        -:   17:*
+        -:   18:*Parâmetros
+        -:   19:*	-
+        -:   20:*Valor retornado
+        -:   21:*	T - grafo de transações desse usuário.	
+        -:   22:*
+        -:   23:*Assertiva de entrada
+        -:   24:*  Não digite o nome com asterisco(Apenas caracteres alfabéticos).
+        -:   25:*
+        -:   26:*Assertiva de saída
+        -:   27:*	Deve retornar um grafo criado.
+        -:   28:*********************************************************/
+        -:   29:
+        -:   30:/** \brief  Função que cria um grafo que conterá as transações em que o usuário pediu e recebeu resposta.*/
+       17:   31:p_grafo_trans cria_grafo_T()
+        -:   32:{
+        -:   33:	/** 
+        -:   34:	\return Um ponteiro para o grafo de transação alocado.
+        -:   35:	*/
+        -:   36:	p_grafo_trans T; 
+        -:   37:
+       17:   38:	T = (p_grafo_trans)malloc(sizeof(tp_grafo_trans));// aloca-se o grafo de transações
+       17:   39:	assert(T); // checa se foi de fato alocado o espaço para o grafo
+        -:   40:
+        -:   41:
+       17:   42:	T->head = (p_verticeT)malloc(sizeof(tp_verticeT)); //cria-se a célula cabeça
+       17:   43:	assert(T->head);// checa se foi de fato alocado o espaço
+       17:   44:	T->ultimo = T->head; // faz o ultimo apontar para a celula cabeça
+        -:   45:
+       17:   46:	T->head->prox = NULL;
+       17:   47:	T->head->ant = NULL;
+        -:   48:
+       17:   49:	return T; // retorna o grafo alocado
+        -:   50:}
+        -:   51:/*******************************************************
+        -:   52:*Função: Destroi grafo de transação de um usuário
+        -:   53:*Descrição
+        -:   54:*	Realiza a liberação de memória do grafo de transação desse usuário	
+        -:   55:*
+        -:   56:*Parâmetros
+        -:   57:*	T - o grafo de transação desse usuário.
+        -:   58:*
+        -:   59:*Assertiva de entrada
+        -:   60:*	O grafo deve existir e conter strings em formato alfabético.
+        -:   61:*
+        -:   62:*Assertiva de saída
+        -:   63:*	Deve liberar todo o espaço reservado para esse grafo(tanto seus vértices quanto suas arestas) 
+        -:   64:*********************************************************/
+        -:   65:
+        -:   66:/** \brief  Função que libera a memória alocada para o grafo.*/
+       12:   67:void destroi_grafo_T(p_grafo_trans T)
+        -:   68:{
+        -:   69:	/** 
+        -:   70:	\details Libera tanto os vértices, quando a lista de arestas de cada vértice.
+        -:   71:	\param T é o ponteiro para o grafo de transação.
+        -:   72:	*/
+        -:   73:
+       12:   74:	p_verticeT v_aux = T->head->prox, v_aux2;
+        -:   75:	p_arestaT a_aux, a_aux2;
+        -:   76:
+       12:   77:	assert(T); // checa se o grafo de fato existe
+        -:   78:	/*verifica fim da lista de vertices*/
+       82:   79:	while(v_aux != NULL) // percorre todos os vértices até terminar a lista de vértices
+        -:   80:	{
+       35:   81:		a_aux = v_aux->head->prox; // recebe a lista de arestas desse vértice
+        -:   82:		/*verifica fim da lista de arestas*/         
+      105:   83:		while(a_aux != NULL){
+       35:   84:			a_aux2 = a_aux;
+       35:   85:			a_aux = a_aux->prox;
+       35:   86:			free(a_aux2); // libera essa aresta
+        -:   87:		}
+       35:   88:		free(v_aux->head); // libera a célula cabeça desse vértice
+       35:   89:		v_aux2 = v_aux;
+       35:   90:		v_aux = v_aux->prox;
+       35:   91:		free(v_aux2); // libere o véritce
+        -:   92:	}
+       12:   93:	free(T->head); // libera a célula cabeça do grafo
+       12:   94:	free(T); // libera o grafo
+       12:   95:}
+        -:   96:
+        -:   97:/*******************************************************
+        -:   98:*Função: Pesquisa Vértice no grafo T
+        -:   99:
+        -:  100:*Descrição
+        -:  101:*	Pesquisa um vértice(tipo de transação) no grafo de transação
+        -:  102:*	desse usuário.	
+        -:  103:*
+        -:  104:*Parâmetros
+        -:  105:*	T - o grafo de transação desse usuário.
+        -:  106:*	s - a string que condiz à transação buscada.
+        -:  107:*
+        -:  108:*Valor retornado
+        -:  109:*	NULL - Não encontrou o vértice(a transação buscada).
+        -:  110:*	 p - o ponteiro para esse vértice(transação).
+        -:  111:*
+        -:  112:*Assertiva de entrada
+        -:  113:*	O nome da transação não pode conter *, apenas caracteres alfabéticos.
+        -:  114:*
+        -:  115:*Assertiva de saída	
+        -:  116:*	Deve retornar ou NULL ou um vértice do grafo que corresponda à string 's'.
+        -:  117:*********************************************************/
+        -:  118:
+        -:  119:/** \brief  Função que pesquisa um vértice(transação) no grafo de um determinado usuário.*/
+       77:  120:p_verticeT pesquisa_verticeT(p_grafo_trans T, char *s)
+        -:  121:{
+        -:  122:	/**  
+        -:  123:	\details Percorre a lista de vértices(transações) do grafo.
+        -:  124:	\param T é o ponteiro para o grafo de transações do grafo de um determinado usuário.
+        -:  125:	\param s é a string que, possivelmente, corresponde à transação que se está buscando.
+        -:  126:	\return ponteiro para esse vértice(transação).
+        -:  127:	*/   
+       77:  128:	p_verticeT p = T->head->prox; // recebe a lista de vértices do grafo
+        -:  129:
+       77:  130:	assert(T); // checa se o grafo foi alocado devidamente.
+      237:  131:	while(p) // enquanto nao chegar no final do arquivo.
+        -:  132:	{
+      119:  133:		if(!strcmp(s, p->trans)) // se encontrou uma transação cujo nome corresponde a 's'
+       39:  134:			return p; // retorna o ponteiro para essa transação
+       80:  135:		p = p->prox;
+        -:  136:	}
+       38:  137:	return NULL; // não encontrou uma transação que correspondessse a 's'
+        -:  138:}
+        -:  139:/*******************************************************
+        -:  140:*Função: Adiciona um Vértice no grafo T
+        -:  141:*Descrição
+        -:  142:*	Adiciona um vértice(tipo de transação) no grafo de transação
+        -:  143:*	desse usuário.	
+        -:  144:*
+        -:  145:*Parâmetros
+        -:  146:*	T - o grafo de transação desse usuário.
+        -:  147:*	x - a string que condiz à transação que deseja-se adicionar.
+        -:  148:*
+        -:  149:*Valor retornado
+        -:  150:*	NULL - Encontrou uma transação correspondente a essa string(a transação que desejava-se adicionar).
+        -:  151:*	 p - o ponteiro para esse vértice(transação).
+        -:  152:*
+        -:  153:*Assertiva de entrada
+        -:  154:*	O nome da transação não pode conter *, apenas caracteres alfabéticos.
+        -:  155:*
+        -:  156:*Assertiva de saída
+        -:  157:*	Deve retornar NULL ou um ponteiro para vértice(tendo em mente que T é um grafo criado e 'x' uma string alfabética)
+        -:  158:*********************************************************/
+        -:  159:
+        -:  160:/** \brief  Função que adiciona um vértice(transação) no grafo de transações do usuário.*/
+       37:  161:p_verticeT adiciona_vertice_T(p_grafo_trans T, char *x)
+        -:  162:{
+       37:  163:	p_verticeT p = T->head->prox;
+        -:  164:
+        -:  165:	/**  
+        -:  166:	\details Pesquisa se o a transação qeu deseja-se inserir já não existe.Caso não exista insere-se no final da lista de vértices do grafo.
+        -:  167:	\param T é o ponteiro para o grafo de transações do grafo de um determinado usuário.
+        -:  168:	\param x é a string que, possivelmente, corresponde à transação que deseja-se inserir.
+        -:  169:	\return ponteiro para esse vértice(transação) criado.
+        -:  170:	*/   
+        -:  171:	
+       37:  172:	assert(T);// checa se o grafo de fato existe
+       37:  173:	if(pesquisa_verticeT(T, x) == NULL){ // caso essa transação ainda não exista(leva-se em consideração o nome fornecido)
+       37:  174:		p = (p_verticeT)malloc(sizeof(tp_verticeT)); // aloca-se espaço para esse vértice
+       37:  175:		assert(p); // checa se foi de fato alocado espaço
+        -:  176:
+       37:  177:		T->ultimo->prox = p;
+       37:  178:		p->ant = T->ultimo;
+       37:  179:		T->ultimo = p;
+       37:  180:		p->prox = NULL;
+        -:  181:
+       37:  182:		strcpy(p->trans,x); // copia-se o nome correspondente 'x'
+        -:  183:
+       37:  184:		p->head = (p_arestaT)malloc(sizeof(tp_arestaT)); // aloca-se a célula cabeça para a sua lista de arestas(pessoas)
+       37:  185:		assert(p->head); // checa se foi de fato alocado espaço
+       37:  186:		p->ultimo = p->head;
+       37:  187:		p->head->ant = NULL;
+       37:  188:		p->head->prox = NULL;
+        -:  189:
+       37:  190:		return p; // retorna o ponteiro para esse novo vértice
+        -:  191:	}
+        -:  192:	else
+    #####:  193:		return NULL; // encontrou uma transação cujo nomo corresponde a 'x'
+        -:  194:}
+        -:  195:
+        -:  196:/*******************************************************
+        -:  197:*Função: Adiciona uma aresta no grafo T
+        -:  198:*Descrição
+        -:  199:*	Adiciona uma aresta(pessoa) no grafo de transação
+        -:  200:*	desse usuário.	
+        -:  201:*
+        -:  202:*Parâmetros
+        -:  203:*	T - o grafo de transação desse usuário.
+        -:  204:*	trans - a string que condiz à transação que deseja-se adicionar uma aresta.
+        -:  205:*	nome - a string que condiz ao nome da pessoa que deseja-se adicionar a lista de aresta de 'trans'.
+        -:  206:*
+        -:  207:*Assertiva de entrada
+        -:  208:*	o grafo deve ter sido criado previamente.
+        -:  209:*	O nome da transação não pdoe conter *, apenas caracteres alfabéticos.
+        -:  210:* 	O nome da pessoa não pode conter *, apenas caracteres alfabéticos.
+        -:  211:*
+        -:  212:*Assertiva de saída
+        -:  213:*	Deve ser adicionada uma aresta no vértice trans.
+        -:  214:*********************************************************/
+        -:  215:
+        -:  216:/** \brief  Função que adiciona uma aresta(pessoa) no grafo de transações do usuário.*/
+       37:  217:void adiciona_aresta_T(p_grafo_trans T, char *trans, char *nome)
+        -:  218:{
+        -:  219:	p_arestaT a_aux;
+        -:  220:	p_verticeT v;
+        -:  221:
+        -:  222:	/**  
+        -:  223:	\details Insere na lista de arestas(pessoas cuja transação com o usuário ainda não foi finalizada) do vértice uma pessoa.
+        -:  224:	\param T é o ponteiro para o grafo de transações do grafo de um determinado usuário.
+        -:  225:	\param trans é a string que, possivelmente, corresponde à transação que deseja-se inserir uma aresta.
+        -:  226:	\param nome é a string que corresponde ao nome da pessoa.
+        -:  227:	*/  
+        -:  228:
+       37:  229:	if(v = pesquisa_verticeT(T, trans)) // checa se a stirng correspondente a transação de fato existe na lista de vértices do grafo
+        -:  230:	{
+       37:  231:		a_aux = (p_arestaT)malloc(sizeof(tp_arestaT)); // aloca-se a aresta(pessoa)
+       37:  232:		assert(a_aux); // checa se foi alocada.
+       37:  233:		a_aux->ant = v->ultimo; // faz o encadeamento.
+       37:  234:		v->ultimo->prox = a_aux;
+       37:  235:		v->ultimo = a_aux;
+       37:  236:		strcpy(a_aux->pessoa,nome); // copia-se o nome da pessoa à aresta.
+       37:  237:		a_aux->prox = NULL;
+        -:  238:	}
+        -:  239:	else // cria-se um novo vértice cujo nome deve ser a transação.
+        -:  240:	{
+    #####:  241:		adiciona_vertice_T(T, trans); //cria-se o novo vértice no grafo 
+    #####:  242:		adiciona_aresta_T(T, trans, nome); // adiciona-se a nova aresta nesse novo vértice criado
+        -:  243:
+        -:  244:	}
+       37:  245:}
+        -:  246:
+        -:  247:/*******************************************************
+        -:  248:*Função: Remove um vértice do grafo T
+        -:  249:*Descrição
+        -:  250:*	Remove um vértice(transação) do grafo de transação
+        -:  251:*	desse usuário.	
+        -:  252:*
+        -:  253:*Parâmetros
+        -:  254:*	T - o grafo de transação desse usuário.
+        -:  255:*	trans - a string que condiz à transação que deseja-se remover do grafo(transação concluida).
+        -:  256:*
+        -:  257:*Assertiva de entrada
+        -:  258:*	O grafo deve ser criado previamente.
+        -:  259:*	O nome da transação não pode conter *, apenas caracteres alfabéticos.
+        -:  260:*
+        -:  261:*Assertiva de saída
+        -:  262:*	O vértice correspondente a trans deve ser removido.
+        -:  263:*********************************************************/
+        -:  264:
+        -:  265:/** \brief  Função que remove um vértice(transação) do grafo de transações do usuário.*/
+        2:  266:void remove_vertice_T(p_grafo_trans T, char *trans)
+        -:  267:{
+        -:  268:	p_verticeT V;
+        -:  269:	p_arestaT A, A2;
+        -:  270:
+        -:  271:	/**  
+        -:  272:	\details Libere a memória reservada para essa transação(vértice), bem como todas as suas arestas(pessoas).
+        -:  273:	\param T é o ponteiro para o grafo de transações do grafo de um determinado usuário.
+        -:  274:	\param trans é a string que, possivelmente, corresponde à transação que deseja-se inserir uma aresta.
+        -:  275:	*/  
+        -:  276:
+        2:  277:	if(V = pesquisa_verticeT(T, trans)) // pesquisa se o nome da transação existe de fato
+        -:  278:	{
+        2:  279:		A = V->head; // recebe a célula cabeça desse vértice(transação)
+       10:  280:		while(A)
+        -:  281:		{
+        4:  282:			A2 = A;
+        4:  283:			A = A->prox;// salva-se o restante da lista.
+        4:  284:			free(A2); // libera-se a aresta.
+        -:  285:		}
+        2:  286:		if(V == T->ultimo) // se for o último vértice do grafo
+        1:  287:			T->ultimo = V->ant;
+        -:  288:		else
+        1:  289:			V->prox->ant = V->ant;
+        2:  290:		V->ant->prox = V->prox;
+        2:  291:		free(V); // libera-se o vértice
+        -:  292:	}
+        2:  293:}
+        -:  294:
+        -:  295:
+        -:  296:/*LISTAS*/
+        -:  297:
+        -:  298:/*******************************************************
+        -:  299:*Função: Cria-se uma lista de transação
+        -:  300:*
+        -:  301:*Descrição
+        -:  302:*	Cria-se uma lista de transação que contém todas as possíveis
+        -:  303:*	transações(carona, viagem, aluguel etc) que podem ser realizadas.
+        -:  304:*
+        -:  305:*Valor retornado
+        -:  306:*	T - a lista de transação criada.
+        -:  307:*
+        -:  308:*Assertiva de saída
+        -:  309:*	Deve retornar um ponteiro para listatrans.
+        -:  310:*********************************************************/
+        -:  311:
+        -:  312:
+        -:  313:/** \brief  Função que cria uma lista(transações) que irá conter todas as transações cadastradas pelo administrador.*/
+        2:  314:p_listatrans cria_lista_trans()
+        -:  315:{
+        -:  316:	p_listatrans T; 
+        -:  317:
+        -:  318:	/**  
+        -:  319:	\return um ponteiro para lista de transações.
+        -:  320:	*/  
+        -:  321:
+        2:  322:	T = (p_listatrans)malloc(sizeof(tp_listatrans));// aloca-se a lista de transação
+        2:  323:	assert(T); // checa se foi de fato alocado o espaço para a lista
+        -:  324:
+        -:  325:
+        2:  326:	T->head = (p_transacao)malloc(sizeof(tp_transacao)); //cria-se a célula cabeça
+        2:  327:	assert(T->head);// checa se foi de fato alocado o espaço
+        2:  328:	T->ultimo = T->head;
+        -:  329:
+        2:  330:	T->head->prox = NULL;
+        2:  331:	T->head->ant = NULL;
+        -:  332:
+        2:  333:	return T; // retorno da lista criada e alocada devidamente
+        -:  334:}
+        -:  335:
+        -:  336:/*******************************************************
+        -:  337:*Função: Carrega transação
+        -:  338:*
+        -:  339:*Descrição
+        -:  340:*	Lê-se do arquivo de transação(trans) todas as ransferências(cadastradas pelo administrador) 
+        -:  341:*	que pode ser realizadas pelos usuários.
+        -:  342:*	
+        -:  343:*Valor retornado
+        -:  344:*	lista - a lista de transação criada e completa com todas as possíveis transações.
+        -:  345:*
+        -:  346:*Assertiva de entrada
+        -:  347:*	O nome do arquivo de leitura não deve ser alterado.
+        -:  348:*	O nome das transação não podem conter caracteres especiais(apenas alfabéticos).
+        -:  349:*
+        -:  350:*Assertiva de saída
+        -:  351:*	Deve retornar NULL, caso o arquivo não contenha nada, ou uma lista contendo
+        -:  352:*	todas as transações cadastradas pelo administrador.
+        -:  353:*********************************************************/
+        -:  354:
+        -:  355:/** \brief  Função que lê do arquivo "trans.txt" todas as transações previamente criadas pelo administrador e armazena na lista.*/
+        1:  356:p_listatrans carrega_trans(){
+        -:  357:	char s[50]; //string auxiliar
+        -:  358:	p_listatrans lista;
+        -:  359:	int size; //tamanho da string
+        -:  360:	int i;
+        -:  361:	FILE *arq;
+        -:  362:
+        -:  363:	/**  
+        -:  364:	\return um ponteiro para lista de transações.
+        -:  365:	*/ 
+        -:  366:
+        1:  367:	if(arq = fopen("trans.txt","r")) // abre o arquivo para leitura(se tiver, de fato, algo para ler)
+        -:  368:	{
+        1:  369:		lista = cria_lista_trans(); // aloca-se a célula cabeça
+        5:  370:		while(!feof(arq)) // enquanto não chegar ao final do arquivo
+        -:  371:		{
+        3:  372:			fscanf(arq,"%d", &size); // lê-se o tamanho da string que irá corresponder ao nome da transação
+        3:  373:			if(feof(arq)) return lista; // se chegou no final do arquivo nesse ponto
+        2:  374:			fgets(s, size+1,arq); // armazena-se na string auxiliar
+        2:  375:			fgetc(arq); //pegar o \n
+        2:  376:			cadastra_trans(lista, s); // insere na lista de transação.
+        -:  377:		}
+    #####:  378:		fclose(arq); // fecha-se o arquivo.
+        -:  379:	}else
+    #####:  380:		return NULL; // não há nada para ler
+        -:  381:	
+    #####:  382:	return lista; // retorna a lista
+        -:  383:}
+        -:  384:
+        -:  385:/*******************************************************
+        -:  386:*Função: Cadastra transação
+        -:  387:*
+        -:  388:*Descrição
+        -:  389:*	Insere na lista de transações uma possível transação com o nome 'x'.
+        -:  390:*	
+        -:  391:*Parâmentros
+        -:  392:*	T - a lista de transação.
+        -:  393:*	x - o possível nome da transação.
+        -:  394:*
+        -:  395:*Valor retornado
+        -:  396:*	TRUE - foi possível inserir a transação.
+        -:  397:*	FALSE - não foi possível inserir, visto que uma transação com esse nome já existe.
+        -:  398:*
+        -:  399:*Assertiva de entrada
+        -:  400:*	a string 'x' deve ser inserida apenas com caracteres alfabéticos(padrões).
+        -:  401:*
+        -:  402:*Assertiva de saída
+        -:  403:*	Deve retornar TRUE se a inserção do item foi feita bem sucedida, ou
+        -:  404:*	retornar FALSE caso esse item('x') já exista na lista.
+        -:  405:*********************************************************/
+        -:  406:
+        -:  407:/** \brief  Função que insere(cadastra) na lista de transações uma transação que o administrador deseja.*/
+        6:  408:int cadastra_trans(p_listatrans T ,char *x){
+        6:  409:	p_transacao p = T->head->prox;
+        -:  410:
+        -:  411:	/** 
+        -:  412:	\param T lista de transações cadastradas. 
+        -:  413:	\param x string que corresponde à transação que deseja-se cadastrar.
+        -:  414:	\return TRUE se teve sucesso na hora de cadastrar, ou FALSE caso essa transação já esteja cadastrada.
+        -:  415:	*/
+        -:  416:
+        -:  417:
+        6:  418:	assert(T);// checa se a lista de fato existe
+        6:  419:	if(pesquisa_trans(T, x) == NULL){ // caso a transacao não exista(leva-se em consideração o nome fornecido)
+        5:  420:		p = (p_transacao)malloc(sizeof(tp_transacao)); // aloca-se espaço para esse no
+        5:  421:		assert(p); // checa se foi de fato alocado espaço
+        -:  422:
+        5:  423:		T->ultimo->prox = p;
+        5:  424:		p->ant = T->ultimo;
+        5:  425:		T->ultimo = p;
+        5:  426:		p->prox = NULL;
+        -:  427:
+        5:  428:		strcpy(p->trans,x); // copia-se o nome 'x' para esse novo item da lista
+        -:  429:
+        5:  430:		return TRUE; // sucesso na inserção
+        -:  431:	}
+        -:  432:	else
+        -:  433:		//transacao ja existe
+        1:  434:		return FALSE;
+        -:  435:}
+        -:  436:/*******************************************************
+        -:  437:*Função: Remove transação
+        -:  438:*
+        -:  439:*Descrição
+        -:  440:*	Remove da lista de transações uma possível transação com o nome 's'.
+        -:  441:*	
+        -:  442:*Parâmentros
+        -:  443:*	T - a lista de transação.
+        -:  444:*	s - o possível nome da transação.
+        -:  445:*
+        -:  446:*Valor retornado
+        -:  447:*	TRUE - foi possível remover a transação.
+        -:  448:*	FALSE - não foi possível remover, visto que uma transação com esse nome não existe.
+        -:  449:*
+        -:  450:*Assertiva de entrada
+        -:  451:*	a string 's' deve ser inserida apenas com caracteres alfabéticos(padrões).
+        -:  452:*
+        -:  453:*Assertiva de saída
+        -:  454:*	Deve retornar TRUE se a remoção do item foi feita bem sucedida, ou
+        -:  455:*	retornar FALSE caso esse item('x') não exista na lista.
+        -:  456:*********************************************************/
+        -:  457:
+        -:  458:/** \brief  Função que remove(descadastra) da lista de transações uma transação que o administrador deseja.*/
+        2:  459:int remove_trans(p_listatrans T, char *s){
+        -:  460:	p_transacao x;
+        -:  461:
+        -:  462:	/** 
+        -:  463:	\param T lista de transações cadastradas. 
+        -:  464:	\param s string que corresponde à transação que deseja-se descadastrar.
+        -:  465:	\return TRUE se teve sucesso na hora de descadastrar, ou FALSE caso essa transação não esteja cadastrada.
+        -:  466:	*/
+        -:  467:
+        2:  468:	assert(T); // checa se a lista já existe.
+        -:  469:
+        2:  470:	if(x = pesquisa_trans(T, s)) // checa se existe uma transação cujo nome corresponde a 's'
+        -:  471:	{
+        1:  472:		if(x == T->ultimo) // checa se for o último item da lista de transação
+        1:  473:			T->ultimo = x->ant;
+        -:  474:		else
+    #####:  475:			x->prox->ant = x->ant;
+        1:  476:		x->ant->prox = x->prox;
+        -:  477:		
+        1:  478:		free(x); // libera-se esse item
+        -:  479:
+        1:  480:		return TRUE; // sucesso na remoçao
+        -:  481:	}else
+        1:  482:		return FALSE;// não existe a transacao
+        -:  483:
+        -:  484:}
+        -:  485:/*******************************************************
+        -:  486:*Função: Pesquisa transação
+        -:  487:*
+        -:  488:*Descrição
+        -:  489:*	Pesquisa na lista de transações uma possível transação com o nome 's'.
+        -:  490:*	
+        -:  491:*Parâmentros
+        -:  492:*	T - a lista de transação.
+        -:  493:*	s - o possível nome da transação.
+        -:  494:*
+        -:  495:*Valor retornado
+        -:  496:*	NULL - não foi possível encoutrar uma transação cujo nome corresponde-se a 's'.
+        -:  497:*	p -ponteiro para essa essa transação buscada.
+        -:  498:*
+        -:  499:*Assertiva de entrada
+        -:  500:*	a string 's' deve ser inserida apenas com caracteres alfabéticos(padrões).
+        -:  501:*
+        -:  502:*Assertiva de saída
+        -:  503:*	Deve retornar um ponteiro para um item da lista, ou NULL caso esse item('s') não exista
+        -:  504:*********************************************************/
+        -:  505:
+        -:  506:/** \brief  Função que pesquisa na lista de transações uma transação desejada.*/
+        8:  507:p_transacao pesquisa_trans(p_listatrans T, char *s){
+        8:  508:	p_transacao p = T->head->prox; // recebe o primeiro item da lista de transaçoes
+        -:  509:
+        -:  510:	/** 
+        -:  511:	\param T lista de transações cadastradas. 
+        -:  512:	\param s string que corresponde à transação que deseja-se pesquisar.
+        -:  513:	\return um ponteiro para esse item da transação ou NULL caso não tenha achado a transação buscada(não foi previamente cadastrada).
+        -:  514:	*/
+        -:  515:
+        8:  516:	assert(T); // checa se a lista, de fato, existe
+       28:  517:	while(p) // enquanto não chegar ao fim da lista
+        -:  518:	{
+       12:  519:		if(!strcmp(s, p->trans)) // se esse item da lista possui o mesmo nome que a transação
+        2:  520:			return p; // retorna o ponteiro para esse item da lista
+       10:  521:		p = p->prox;
+        -:  522:	}
+        6:  523:	return NULL; // não foi possivel encontrar uma transação cujo nome fosse 's'
+        -:  524:}
+        -:  525:/*******************************************************
+        -:  526:*Função: Salva Transações
+        -:  527:*
+        -:  528:*Descrição
+        -:  529:*	Salva todas as transações cadastradas pelo administrador no arquivo "trans.txt"
+        -:  530:*	
+        -:  531:*Parâmentros
+        -:  532:*	T - a lista de transação.
+        -:  533:*
+        -:  534:*Assertiva de entrada
+        -:  535:*	O nome das transações deve ser inserido apenas com caracteres alfabéticos(padrões).
+        -:  536:*
+        -:  537:*Assertiva de saída
+        -:  538:*	Deve salvar no arquivo "trans.txt" todas as informações contidas na lista.
+        -:  539:*********************************************************/
+        -:  540:
+        -:  541:/** \brief  Função que salva no arquivo "trans.txt" todas as transações cadastradas pelo administrador.*/
+        1:  542:int salva_trans(p_listatrans T){
+        -:  543:	FILE *arq;
+        1:  544:	p_transacao p = T->head->prox;// recebe o primeiro item da lista de transação
+        -:  545:
+        -:  546:	/** 
+        -:  547:	\param T lista de transações cadastradas. 
+        -:  548:	*/
+        -:  549:
+        1:  550:	if(arq = fopen("trans.txt","w")) // abre o arquivo "trans.txt" para escrita
+        -:  551:	{
+        5:  552:		while(p) // enquanto não chegar ao final da lista de transações
+        -:  553:		{
+        2:  554:			fprintf(arq,"%d", (int)strlen(p->trans)); // escreve o tamanho da string que corresponde a transação
+        2:  555:			fputs(p->trans,arq); // escreve a transação
+        2:  556:			fprintf(arq,"\n");
+        2:  557:			p = p->prox;
+        -:  558:		}
+        -:  559:	}
+        1:  560:	fclose(arq); // fecha-se o arquivo
+        1:  561:}
+        -:  562:
+        -:  563:/*******************************************************
+        -:  564:*Função: Destroi Transações
+        -:  565:*
+        -:  566:*Descrição
+        -:  567:*	Libera a memória armazenada para a lista de transações.	
+        -:  568:*	
+        -:  569:*Parâmentros
+        -:  570:*	T - a lista de transação.
+        -:  571:*
+        -:  572:*Assertiva de entrada
+        -:  573:*	O nome das transações deve ser inserido apenas com caracteres alfabéticos(padrões).
+        -:  574:*
+        -:  575:*Assertiva de saída
+        -:  576:*	Função deve liberar o espaço alocado para a lista.
+        -:  577:*
+        -:  578:*********************************************************/
+        -:  579:
+        -:  580:/** \brief  Função que libera toda a lista de transações cadastradas.*/
+        1:  581:void destroi_trans(p_listatrans T){
+        1:  582:	p_transacao p = T->head, p2 = NULL;
+        -:  583:	
+        -:  584:	/** 
+        -:  585:	\param T lista de transações cadastradas. 
+        -:  586:	*/
+        7:  587:	while(p) // enquanto não chegar ao final da lista
+        -:  588:	{
+        3:  589:		p2 = p; 
+        3:  590:		p = p->prox; // salva-se o restante da lista
+        3:  591:		free(p2); // elimina-se esse item
+        -:  592:	}
+        -:  593:
+        1:  594:	free(T); // elimina-se a estrutura listaT
+        1:  595:}
+        -:  596:/*******************************************************
+        -:  597:*Função: Imprime Transações
+        -:  598:*
+        -:  599:*Descrição
+        -:  600:*	Imprime todas as transações cadastradas pelo administrador.
+        -:  601:*	
+        -:  602:*Parâmentros
+        -:  603:*	T - a lista de transação.
+        -:  604:*
+        -:  605:*Assertiva de entrada
+        -:  606:*	O nome das transações deve ser inserido apenas com caracteres alfabéticos(padrões).
+        -:  607:*
+        -:  608:*********************************************************/
+        -:  609:
+        -:  610:/** \brief  Função que imprime todas as transações cadastradas pelo administrador.*/
+        1:  611:void imprime_trans(p_listatrans T)
+        -:  612:{
+        -:  613:
+        -:  614:	/** 
+        -:  615:	\param T lista de transações cadastradas. 
+        -:  616:	*/
+        1:  617:	p_transacao p = T->head->prox; // recebe o primeiro item da lista de transação
+        -:  618:
+        5:  619:	while(p) // enquanto não chegar ao final da lista de transação 
+        -:  620:	{
+        2:  621:		printf("%s.\n", p->trans); // imprime a transação
+        -:  622:
+        2:  623:		p = p->prox;
+        -:  624:	}
+        1:  625:}
+        -:  626:
+        -:  627:
+        -:  628:/*LISTA DE HISTÓRICO E REQUISITOS*/
+        -:  629:
+        -:  630:
+        -:  631:/*******************************************************
+        -:  632:*Função: Adiciona um nó a lista(REQUERIDO OU HISTÓRICO)
+        -:  633:*
+        -:  634:*Descrição
+        -:  635:*	Adiciona um novo item ou na lista em que esse usuário foi requerido(seus dados correspondem aos pedidos por um outro usuário)
+        -:  636:*	ou na lista que contém o seu histórico de transações efetivadas.
+        -:  637:*	
+        -:  638:*Parâmentros
+        -:  639:*	lista - a lista(ou de requerido ou o historico de transações).
+        -:  640:*	trans - o possível nome da transação que deseja-se adicionar à lista.
+        -:  641:*	nome - o possivel nome da pessoa que pediu(lista de requerido) ou da outra pessoa
+        -:  642:*		   que estava envolvida na transação que já foi realizada.	
+        -:  643:*
+        -:  644:*Valor retornado
+        -:  645:*	Ponteiro para esse item da lista(no).
+        -:  646:*
+        -:  647:*Assertiva de entrada
+        -:  648:*	O nome das transações deve ser inserido apenas com caracteres alfabéticos(padrões),
+        -:  649:*	bem como o nome da pessoa.
+        -:  650:*
+        -:  651:*Assertiva de saída
+        -:  652:*	Função deve retornar o ponteiro para esse novo item da lista.
+        -:  653:*********************************************************/
+        -:  654:
+        -:  655:
+        -:  656:/** \brief  Função que adiciona um nó na lista de transações(REQUERIDO OU HISTÓRICO) de um usuário.
+        -:  657:A lista de requerido contém os convites que esse usuário recebe ao corresponder aos requerimentos de uma 
+        -:  658:transação criada por outro usuário.
+        -:  659:A lista de histórico contém todas as transações em que esse usuário participou.
+        -:  660:*/
+       82:  661:p_noT adicionaNO(p_listaT lista, char *trans, char *nome)
+        -:  662:{
+        -:  663:	/** 
+        -:  664:	\param lista É a lista que pode ser tanto de requerido quanto o histórico.
+        -:  665:	\param trans É a transação que deseja-se inserir.
+        -:  666:	\param nome É o nome da pessoa com quem esse usuário está envolvido(lista de requerido) ou se envolveu(histórico).
+        -:  667:	\return O nó que foi adicionado à lista.
+        -:  668:	*/
+        -:  669:
+        -:  670:
+        -:  671:	p_noT T_aux;
+       82:  672:	T_aux = (p_noT)malloc(sizeof(tp_noT)); // aloca-se espaço para esse no
+       82:  673:	assert(T_aux); // checa se foi de fato alocado espaço
+        -:  674:
+        -:  675:
+       82:  676:	T_aux->ant = lista->ultimo;
+       82:  677:	lista->ultimo->prox = T_aux;
+       82:  678:	lista->ultimo = T_aux;
+       82:  679:	T_aux->prox = NULL;
+        -:  680:
+       82:  681:	strcpy(T_aux->trans,trans); // copia-se o nome da transaçao para esse no
+       82:  682:	strcpy(T_aux->pessoa,nome); // copia-se o nome da pessoa para esse no
+        -:  683:
+        -:  684:
+       82:  685:	return T_aux;
+        -:  686:/*VERIFICAR SE PODE HAVER REPETIÇÃO DE PEDIDOS DO MESMO TIPO DE TRANSAÇÃO*/
+        -:  687:}
+        -:  688:
+        -:  689:/*******************************************************
+        -:  690:*Função: Destroi a lista(REQUERIDO OU HISTÓRICO)
+        -:  691:*
+        -:  692:*Descrição
+        -:  693:*	Libera a memória reservada para essa lista.
+        -:  694:*	
+        -:  695:*Parâmentros
+        -:  696:*	T - ponteiro para a lista(ou de requerido ou de histórico).	
+        -:  697:*
+        -:  698:*Assertiva de saída
+        -:  699:*	Função deve liberar todo espaço que foi reservado para essa lista(bem como todos os seus itens).
+        -:  700:*********************************************************/
+        -:  701:
+        -:  702:
+        -:  703:/** \brief  Função que libera a memória reservada para a lista de transações(REQUERIDO OU HISTÓRICO) de um usuário.
+        -:  704:A lista de requerido contém os convites que esse usuário recebe ao corresponder aos requerimentos de uma 
+        -:  705:transação criada por outro usuário.
+        -:  706:A lista de histórico contém todas as transações em que esse usuário participou.
+        -:  707:*/
+       24:  708:void destroi_T(p_listaT T){
+       24:  709:	p_noT p = T->head, p2 = NULL;
+        -:  710:
+        -:  711:	/** 
+        -:  712:	\param T É a lista que pode ser tanto de requerido quanto o histórico.
+        -:  713:	*/
+        -:  714:
+      234:  715:	while(p) // enqaunto nao for o final da lista
+        -:  716:	{
+      105:  717:		p2 = p;
+      105:  718:		p = p->prox; // salva-se o restante da lista
+      105:  719:		free(p2); // libera esse item
+        -:  720:	}
+        -:  721:
+       24:  722:	free(T); // libera a celula cabeça
+       24:  723:}
+        -:  724:/*******************************************************
+        -:  725:*Função: Remove item da lista(REQUERIDO OU HISTÓRICO)
+        -:  726:*
+        -:  727:*Descrição
+        -:  728:*	Libera a memória reservada para esse item da lista.
+        -:  729:*	
+        -:  730:*Parâmentros
+        -:  731:*	T - ponteiro para a lista(ou de requerido ou de histórico).	
+        -:  732:*	x - ponteiro para o item da lista(no).
+        -:  733:*
+        -:  734:*Valor retornado
+        -:  735:*	TRUE - sucesso ao remover o item da lista.
+        -:  736:*	FALSE - não foi possível remover, visto que o item não existe.
+        -:  737:*
+        -:  738:*Assertiva de saída
+        -:  739:*	Função deve liberar todo espaço que foi reservado para esse item da lista.
+        -:  740:*********************************************************/
+        -:  741:
+        -:  742:/** \brief  Função que remove um item da lista de transações(REQUERIDO OU HISTÓRICO) de um usuário.
+        -:  743:A lista de requerido contém os convites que esse usuário recebe ao corresponder aos requerimentos de uma 
+        -:  744:transação criada por outro usuário.
+        -:  745:A lista de histórico contém todas as transações em que esse usuário participou.
+        -:  746:*/
+        2:  747:int remove_T(p_listaT T, p_noT x){
+        -:  748:	
+        2:  749:	assert(T);
+        -:  750:
+        -:  751:	/** 
+        -:  752:	\param T É a lista que pode ser tanto de requerido quanto o histórico.
+        -:  753:	\param x é o nó que deseja-se remover da lista.
+        -:  754:	\return TRUE se a remoção foi bem sucedida, ou FALSE caso esse nó não exista.
+        -:  755:	*/
+        -:  756:
+        2:  757:	if(x) // se o nó existe
+        -:  758:	{
+        1:  759:		if(x == T->ultimo) // se ele for o ultimo item da lista de transação
+    #####:  760:			T->ultimo = x->ant;
+        -:  761:		else
+        1:  762:			x->prox->ant = x->ant;
+        1:  763:		x->ant->prox = x->prox;
+        -:  764:		
+        1:  765:		free(x); // libera-se o nó
+        -:  766:
+        1:  767:		return TRUE; // sucesso ao remover o nó
+        -:  768:	}else
+        1:  769:		return FALSE;// não existe a transacao
+        -:  770:}
+        -:  771:
+        -:  772:/*******************************************************
+        -:  773:*Função: Pesquisa item da lista(REQUERIDO OU HISTÓRICO)
+        -:  774:*
+        -:  775:*Descrição
+        -:  776:*	Realiza uma busca na lista para retornar o ponteiro para esse determinado item, 
+        -:  777:*	levando em consideração o nome da transação.
+        -:  778:*	
+        -:  779:*Parâmentros
+        -:  780:*	T - ponteiro para a lista(ou de requerido ou de histórico).	
+        -:  781:*	s - string que corresponde ao nome da transação.
+        -:  782:*	aval - flag que informa se a pesquisa deve levar em consideração o fato
+        -:  783:*	da pessoa já ter avaliado, ou nao, uma transação.
+        -:  784:*
+        -:  785:*Valor retornado
+        -:  786:*	NULL - Não foi possível encontrar essa transação.
+        -:  787:*	p - a transação buscada foi encontrada.
+        -:  788:*
+        -:  789:*Assertiva de entrada
+        -:  790:*	O nome da transação não pode conter caracteres especiais, apenas alfabéticos.
+        -:  791:*
+        -:  792:*Assertiva de saída
+        -:  793:*	Dado que os paramêtros foram entrados de forma correta, a função deve retornar ou NULL ou p.
+        -:  794:*********************************************************/
+        -:  795:
+        -:  796:/** \brief  Função que busca por um item da lista de transações(REQUERIDO OU HISTÓRICO) de um usuário.
+        -:  797:A lista de requerido contém os convites que esse usuário recebe ao corresponder aos requerimentos de uma 
+        -:  798:transação criada por outro usuário.
+        -:  799:A lista de histórico contém todas as transações em que esse usuário participou.
+        -:  800:*/
+        6:  801:p_noT pesquisa_T(p_listaT T, char *s, int aval){
+        6:  802:	p_noT p = T->head->prox;
+        -:  803:
+        -:  804:	/** 
+        -:  805:	\param T É a lista que pode ser tanto de requerido quanto o histórico.
+        -:  806:	\param s é a string que, possivelmente, corresponde à transação que se está buscando.
+        -:  807:	\param aval É uma flag que informa se a busca deve levar em consideração se a transação que se está buscando já foi avaliada ou não.
+        -:  808:	\return um ponteiro para um nó da lista(busca realizada com sucesso), ou NULL caso esse nó não exista.
+        -:  809:	*/
+        -:  810:
+        6:  811:	assert(T);
+        6:  812:	if(!aval)
+        -:  813:	{
+       10:  814:		while(p){
+        7:  815:			if(!strcmp(s, p->trans))
+        5:  816:				return p;
+        2:  817:			p = p->prox;
+        -:  818:		}
+        -:  819:	}
+        -:  820:	else
+        -:  821:	{
+    #####:  822:		while(p){
+    #####:  823:			if(!strcmp(s, p->trans) && !p->aval)
+    #####:  824:				return p;
+    #####:  825:			p = p->prox;
+        -:  826:		}
+        -:  827:	}
+        -:  828:
+        1:  829:	return NULL;
+        -:  830:}
+        -:  831:/*******************************************************
+        -:  832:*Função: Cria a lista(REQUERIDO OU HISTÓRICO)
+        -:  833:*
+        -:  834:*Descrição
+        -:  835:*	Realiza a criação da lista(REQUERIDO OU HISTÓRICO).
+        -:  836:*	
+        -:  837:*Valor retornado
+        -:  838:*	T - o ponteiro para a lista criada.
+        -:  839:*
+        -:  840:*Assertiva de saída
+        -:  841:*	Deve retornar um ponteiro para lista.
+        -:  842:*********************************************************/
+        -:  843:
+        -:  844:/** \brief  Função que cria uma lista de transações(REQUERIDO OU HISTÓRICO) de um usuário.
+        -:  845:A lista de requerido contém os convites que esse usuário recebe ao corresponder aos requerimentos de uma 
+        -:  846:transação criada por outro usuário.
+        -:  847:A lista de histórico contém todas as transações em que esse usuário participou.
+        -:  848:*/
+       38:  849:p_listaT cria_listaT()
+        -:  850:{
+        -:  851:	/** 
+        -:  852:	\return um ponteiro para a lista criada(pode ser tanto de requerido quanto de histórico).
+        -:  853:	*/
+        -:  854:	p_listaT T; 
+        -:  855:
+       38:  856:	T = (p_listaT)malloc(sizeof(tp_listaT));// aloca-se a lista
+       38:  857:	assert(T); // checa se foi de fato alocado memória
+        -:  858:
+        -:  859:
+       38:  860:	T->head = (p_noT)malloc(sizeof(tp_noT)); //cria-se a célula cabeça
+       38:  861:	assert(T->head);// checa se foi de fato alocado o espaço
+       38:  862:	T->ultimo = T->head;
+        -:  863:
+       38:  864:	T->head->prox = NULL;
+       38:  865:	T->head->ant = NULL;
+        -:  866:
+       38:  867:	return T; // retorna-se o ponteiro para a lista
+        -:  868:}
+        -:  869:
+        -:  870:/*******************************************************
+        -:  871:*Função: Imprime o grafo de transações
+        -:  872:*
+        -:  873:*Descrição
+        -:  874:*	Percorre a o grafo imprimindo cada vértice e aresta(tanto a transação quanto as pessoas).
+        -:  875:*	
+        -:  876:*Paramêtros
+        -:  877:*	T - ponteiro para o grafo de transações desse usuário.
+        -:  878:*
+        -:  879:*Assertiva de entrada
+        -:  880:*	Os nomes das transações e das pessoas não deve conter caracteres especiais, apenas
+        -:  881:*	alfabéticos.
+        -:  882:*
+        -:  883:*Assertiva de saída
+        -:  884:*	Deve imprimir todo o grafo.
+        -:  885:*********************************************************/
+        -:  886:
+        -:  887:/** \brief Função que imprime todas as informações do grafo de transações criadas, mas não finalizadas, de um usuário
+        -:  888:bem como seus vértices e arestas.
+        -:  889:*/
+    #####:  890:void imprime_grafoT(p_grafo_trans T){
+    #####:  891:	p_verticeT v = T->head->prox; // recebe o primeiro vértice do grafo
+        -:  892:	p_arestaT  a;
+        -:  893:	
+        -:  894:	/**
+        -:  895:	\param T É o ponteiro para o grafo de transações de um usuário.
+        -:  896:	*/
+    #####:  897:	if(!v)
+        -:  898:	{
+    #####:  899:		printf("Sem transacoes.\n");
+    #####:  900:		return;
+        -:  901:	}
+        -:  902:
+    #####:  903:	while(v) // enquanto não chegar ao final da lista de vértices desse grafo
+        -:  904:	{
+    #####:  905:		a = v->head->prox; // recebe a lista de arestas desse vértice
+    #####:  906:		printf("%s\n", v->trans); // imprime a transaçao
+    #####:  907:		while(a) // enquanto não chegar ao final da lista de arestas desse vértice
+        -:  908:		{
+    #####:  909:			printf("\t%s\n", a->pessoa); // imprime a pessoa cuja transação está em andamento
+    #####:  910:			a = a->prox;
+        -:  911:		}
+    #####:  912:		v = v->prox;
+        -:  913:	}	
+        -:  914:}
+        -:  915:

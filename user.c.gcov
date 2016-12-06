@@ -1,0 +1,347 @@
+        -:    0:Source:user.c
+        -:    0:Programs:3
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "user.h"
+        -:    6:
+        -:    7:#define TRUE 1
+        -:    8:#define FALSE 0
+        -:    9:
+        -:   10:/************************************************************************************
+        -:   11:* Função: Busca Requisitos
+        -:   12:* Descrição
+        -:   13:*	Busca e convida usuários que se encaixam em certos requisitos a realizar uma
+        -:   14:* transação de acordo com a abrangência do convite.
+        -:   15:* Parâmetros
+        -:   16:*	G - ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:   17:*	req_user - estrutura usuário base para comparação dos requisitos.
+        -:   18:*	user - ponteiro para o usuário que requisitou a transação
+        -:   19:*	abran - flag que determina a abrangência da análise
+        -:   20:*		1 - Amigos
+        -:   21:*		2 - Amigos de amigos
+        -:   22:*		3 - Qualquer usuário
+        -:   23:*	xp - flag que determina se há necessidade de se avaliar a experiência dos usuários
+        -:   24:* com a transação em questão.
+        -:   25:*	trans - String que armazena o tipo de transação a ser realizada.
+        -:   26:* Assertiva de entrada
+        -:   27:*	G necessita ser diferente de NULL e possuir uma estrutura grafo inicializada.
+        -:   28:*	req_user necessita estar com valores padrões caso um dos requisitos não tenha 
+        -:   29:*sido selecionado para análise.
+        -:   30:*	user necessita ser diferente de NULL e possuir estrutura inicializada e contida
+        -:   31:*no grafo G.
+        -:   32:*	abran necessita armazenar um valor entre 1 e 3.
+        -:   33:* 	xp necessista armazenar 0 ou 1.
+        -:   34:*************************************************************************************/
+        -:   35:/** @brief Busca e convida usuários que se encaixam em certos requisitos a realizar uma
+        -:   36: * transação de acordo com a abrangência do convite.
+        -:   37:*	@param G Ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:   38:*	@param req_user Estrutura usuário base para comparação dos requisitos.
+        -:   39:*	@param user Ponteiro para o usuário que requisitou a transação
+        -:   40:*	@param abran Flag que determina a abrangência da análise
+        -:   41:*	@param xp Flag que determina se há necessidade de se avaliar a experiência dos usuários
+        -:   42:* com a transação em questão.
+        -:   43:*	@param trans String que armazena o tipo de transação a ser realizada.
+        -:   44:*/
+        -:   45:
+        4:   46:void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp, char *trans)
+        -:   47:{
+        4:   48:	p_vertice v_aux = G->head->prox;
+        4:   49:	p_aresta a_aux= user->head->prox, a_aux2;
+        -:   50:
+        -:   51:	//caso abrangencia seja de qualquer usuário
+        4:   52:	if(abran == 3)
+        -:   53:	{
+       26:   54:		while(v_aux) //percorre o grafo comparando os requisitos com todos os usuários
+        -:   55:		{
+        -:   56:			//verifica se o ponteiro não está apaontando para o usuário que pedir a transação
+       12:   57:			if(v_aux != user)	
+       10:   58:				if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
+        -:   59:				{
+        -:   60:					//adiciona na lista de transações requeridas do usuário
+        2:   61:					adicionaNO((v_aux->usuario.listaT_req),trans, user->usuario.nome);
+        -:   62:				}
+       12:   63:			v_aux = v_aux->prox;
+        -:   64:		}
+        -:   65:	}
+        -:   66:	else
+        -:   67:	{	
+        -:   68:		//percorre lista de amigos do user, comparando requesitos
+       14:   69:		while(a_aux)
+        -:   70:		{
+        6:   71:			if(verifica_requisitos(a_aux->amigo, req_user, xp, trans) == TRUE)
+        -:   72:			{
+        2:   73:				adicionaNO((a_aux->amigo->usuario.listaT_req),trans, user->usuario.nome);
+        -:   74:			}	
+        -:   75:			//caso a abrangencia seja de amigos de amigos
+        6:   76:			if(abran == 2)
+        -:   77:			{
+        -:   78:				//percorre lista de amigos de cada amigo
+        6:   79:				a_aux2 = a_aux->amigo->head->prox;
+       42:   80:				while(a_aux2)
+        -:   81:				{
+       18:   82:					if(verifica_requisitos(a_aux2->amigo, req_user, xp, trans) == TRUE)
+        -:   83:					{
+        4:   84:						adicionaNO((a_aux2->amigo->usuario.listaT_req),trans, user->usuario.nome);
+        -:   85:					}	
+       18:   86:					a_aux2 = a_aux2->prox;	
+        -:   87:				}
+        -:   88:			}
+        6:   89:			a_aux = a_aux->prox;
+        -:   90:		}
+        -:   91:	}
+        4:   92:}
+        -:   93:
+        -:   94:/************************************************************************************
+        -:   95:* Função: Verifica Requisitos
+        -:   96:* Descrição
+        -:   97:* 	Verifica se usúario se qualifica de acordo com requesitos para uma transação
+        -:   98:* Parâmetros
+        -:   99:*	user - ponteiro para o usuário que requisitou a transação
+        -:  100:*	req_user - estrutura usuário base para comparação dos requisitos.
+        -:  101:*	xp - flag que determina se há necessidade de se avaliar a experiência dos usuários
+        -:  102:* com a transação em questão.
+        -:  103:*	trans - String que armazena o tipo de transação a ser realizada.
+        -:  104:* Valor retornado
+        -:  105:* 	Função retorna a macro TRUE caso o usuário seja qualificado com os requisitos
+        -:  106:* e FALSE caso contrário.
+        -:  107:* Assertiva de entrada
+        -:  108:*	req_user necessita estar com valores padrões caso um dos requisitos não tenha 
+        -:  109:*sido selecionado para análise.
+        -:  110:*	user necessita ser diferente de NULL e possuir estrutura inicializada e contida
+        -:  111:*no grafo G.
+        -:  112:* 	xp necessista armazenar 0 ou 1.
+        -:  113:* Assertiva de saída
+        -:  114:*	Função deve retornar as macros FALSE ou TRUE.
+        -:  115:*************************************************************************************/
+        -:  116:/** @brief Busca e convida usuários que se encaixam em certos requisitos a realizar uma
+        -:  117:* transação de acordo com a abrangência do convite.
+        -:  118:*	@param req_user Estrutura usuário base para comparação dos requisitos.
+        -:  119:*	@param user Ponteiro para o usuário a ser avaliado.
+        -:  120:*	@param abran Flag que determina a abrangência da análise.
+        -:  121:*	@param xp Flag que determina se há necessidade de se avaliar a experiência dos usuários
+        -:  122:* com a transação em questão.
+        -:  123:*	@param trans String que armazena o tipo de transação a ser realizada.
+        -:  124:*	@return Retona TRUE caso o usuário seja qualificado com os requisitos, caso contrário retona FALSE. 
+        -:  125:*/
+        -:  126:
+       34:  127:int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
+        -:  128:{
+       34:  129:	p_noT T_aux = user->usuario.listaT_his->head->prox; //ponteiro auxiliar para verificar xp
+        -:  130:	int i;
+        -:  131:
+        -:  132:	/*Todas as comparações verificam se não há valores padrões no req_user,
+        -:  133:	pois valores padrões indicam que o usuário não quer avaliar tal requesito*/
+        -:  134:
+       34:  135:	if(user->usuario.idade < req_user.idade && req_user.idade!=-1)
+    #####:  136:		return FALSE;
+       34:  137:	if(user->usuario.genero != req_user.genero && req_user.genero!='x')
+    #####:  138:		return FALSE;
+       34:  139:	if(user->usuario.escolaridade != req_user.escolaridade && req_user.escolaridade!=0)
+       26:  140:		return FALSE;
+        8:  141:	if(user->usuario.cep != req_user.cep && req_user.cep!=0)
+    #####:  142:		return FALSE;
+        8:  143:	if(user->usuario.quant_aval < req_user.quant_aval && req_user.quant_aval!=0)
+    #####:  144:		return FALSE;
+        -:  145:
+        8:  146:	if(req_user.n_interesses != 0)
+        -:  147:	{	
+        -:  148:		/*Percorre vetor de interesses, verificando se usuário possui o interesse requerido*/
+        8:  149:		for(i = 0;i < user->usuario.n_interesses; i++)
+        -:  150:		{
+        8:  151:			if(!strcmp(user->usuario.interesses[i], req_user.interesses[0]))	
+        8:  152:				break;
+        -:  153:		}
+        -:  154:
+        8:  155:		if(i == user->usuario.n_interesses)
+    #####:  156:			return FALSE;
+        -:  157:	}
+        -:  158:
+        8:  159:	if(xp == 1)
+        -:  160:	{
+        -:  161:		/*Percorre lista de histórico verificando se o usúario já realizou a 
+        -:  162:		transação em questão*/
+        4:  163:		while(T_aux)
+        -:  164:		{
+        4:  165:			if(!strcmp(trans, T_aux->trans))
+        4:  166:				break;
+        -:  167:
+    #####:  168:			T_aux = T_aux->prox;
+        -:  169:		}
+        -:  170:
+        4:  171:		if(!T_aux)
+    #####:  172:			return FALSE;
+        -:  173:	}
+        -:  174:	
+        8:  175:	return TRUE;
+        -:  176:}
+        -:  177:
+        -:  178:/************************************************************************************
+        -:  179:* Função: Finaliza Transação
+        -:  180:* Descrição
+        -:  181:*	Função que finaliza uma transação, retirando o convite de todos os usuários
+        -:  182:*requisitados e armazenando no histórico dos envolvidos na transação.
+        -:  183:* Parâmetros
+        -:  184:*	G - ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:  185:*	user - usuário que pediu uma transação.
+        -:  186:*	nome - string que armazena o nome da pessoa escolhida.
+        -:  187:*	trans - String que armazena o tipo de transação a ser realizada.
+        -:  188:* Valor retornado
+        -:  189:* 	Função retorna a macro TRUE caso os dados de entrada e o convite exista,
+        -:  190:*FALSE caso contrário.
+        -:  191:* Assertiva de entrada
+        -:  192:*	G necessita ser diferente de NULL e possuir uma estrutura grafo inicializada.
+        -:  193:*	user necessita ser diferente de NULL e possuir estrutura inicializada e contida
+        -:  194:*no grafo G.
+        -:  195:* Assertiva de saída
+        -:  196:*	Função deve retornar as macros FALSE ou TRUE.
+        -:  197:*************************************************************************************/
+        -:  198:
+        -:  199:/** @brief Função que finaliza uma transação, retirando o convite de todos os usuários
+        -:  200:*requisitados e armazenando no histórico dos envolvidos na transação.
+        -:  201:*	@param G Ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:  202:*	@param user Ponteiro para o usuário que requisitou a transação.
+        -:  203:*	@param trans String que armazena o tipo de transação a ser realizada.
+        -:  204:*	@param nome String que armazena o nome da pessoa escolhida.
+        -:  205:*	@return Retorna a macro TRUE caso os dados de entrada e o convite exista,
+        -:  206:*FALSE caso contrário. 
+        -:  207:*/
+        -:  208:
+        2:  209:int finalizar_trans(p_grafo G, p_vertice user,char *trans, char *nome)
+        -:  210:{
+        -:  211:	p_vertice v_aux, v_aux2;
+        -:  212:	p_noT no;
+        -:  213:
+        -:  214:	FILE *arq;
+        -:  215:
+        -:  216:	//verificação e pesquisa do usuário escolhido
+        2:  217:	if((v_aux = pesquisa_grafo_T(G, user->usuario.grafoT, trans, nome)))
+        -:  218:	{
+        -:  219:		//adiciciona na lista do histórico
+        1:  220:		no = adicionaNO(v_aux->usuario.listaT_his, trans, user->usuario.nome);
+        1:  221:		no->aval = 0; // não avaliou
+        1:  222:		no = adicionaNO(user->usuario.listaT_his, trans, nome);
+        1:  223:		no->aval = 0; // não avaliou
+        -:  224:
+        -:  225:		//apaga convites dos outros usuários convidados
+        1:  226:		v_aux2 = G->head->prox; // recebe a lista de vértices do grafo(rede social)
+       13:  227:		while(v_aux2) // percorre a lista de vértices
+        -:  228:		{
+        6:  229:			if((no = pesquisa_T(v_aux2->usuario.listaT_req, trans, 0))) // checa se, na lista de requerimentos desse usuário, existia essa transação como pendente
+        -:  230:			{
+        5:  231:				if(!strcmp(no->pessoa, user->usuario.nome)) // checa se o nome é o mesmo
+    #####:  232:					remove_T(v_aux2->usuario.listaT_req , no);
+        -:  233:			}
+        6:  234:			v_aux2 = v_aux2->prox;
+        -:  235:		}
+        1:  236:		remove_vertice_T(user->usuario.grafoT, trans); //Remove vértice e arestas a respeito da transação
+        -:  237:
+        1:  238:		arq = fopen("historico.txt", "a");
+        -:  239:
+        1:  240:		fprintf(arq, "%s/%s/%s\n", trans, user->usuario.nome, nome);
+        -:  241:
+        1:  242:		fclose(arq);
+        -:  243:	}
+        -:  244:	else
+        1:  245:		return FALSE;
+        -:  246:
+        1:  247:	return TRUE;
+        -:  248:}
+        -:  249:
+        -:  250:/************************************************************************************
+        -:  251:* Função: Pesquisa no Grafo T
+        -:  252:* Descrição
+        -:  253:*	Função que pesquisa no grafo de transações pendentes de um usuário uma transação com 
+        -:  254:* outro usuário.
+        -:  255:* Parâmetros
+        -:  256:*	G - ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:  257:*	grafoT - ponteiro para a estrutura GrafoTrans que armazena transações pendentes de
+        -:  258:* usuário.
+        -:  259:*	nome - string que armazena o nome da pessoa escolhida.
+        -:  260:*	trans - String que armazena o tipo de transação a ser realizada.
+        -:  261:* Valor retornado
+        -:  262:* 	Função retorna o ponteiro para o vértice do usuário escolhido ou NULL caso não encontre.
+        -:  263:* Assertiva de entrada
+        -:  264:*	G necessita ser diferente de NULL e possuir uma estrutura grafo inicializada.
+        -:  265:*	grafoT necessita ser diferente de NULL e possuir estrutura inicializada.
+        -:  266:* Assertiva de saída
+        -:  267:*	Função deve retornar um ponteiro da um usuário existente em G ou NULL.
+        -:  268:*************************************************************************************/
+        -:  269:
+        -:  270:/** @brief Função que pesquisa no grafo de transações pendentes de um usuário uma transação com 
+        -:  271:* outro usuário.
+        -:  272:*	@param G Ponteiro para a estrutura Grafo que armazena todos os usuários.
+        -:  273:*	@param grafoT Ponteiro para a estrutura GrafoTrans que armazena transações pendentes de
+        -:  274:* usuário.
+        -:  275:*	@param trans String que armazena o tipo de transação a ser realizada.
+        -:  276:*	@param nome String que armazena o nome da pessoa escolhida.
+        -:  277:*	@return Retorna o ponteiro para o vértice do usuário escolhido ou NULL caso não encontre.
+        -:  278:*/
+        -:  279:
+        4:  280:p_vertice pesquisa_grafo_T(p_grafo G, p_grafo_trans grafoT, char *trans, char *nome)
+        -:  281:{
+        4:  282:	p_vertice v_aux = G->head->prox;
+        4:  283:	p_verticeT vt_aux = grafoT->head->prox;
+        -:  284:	p_arestaT at_aux;
+        -:  285:
+        -:  286:	//Percorre vérices do Grafo T
+       20:  287:	while(vt_aux)
+        -:  288:	{
+        -:  289:		//Busca transação
+       10:  290:		if(!strcmp(vt_aux->trans, trans))
+        -:  291:		{
+        3:  292:			at_aux = vt_aux->head->prox;
+        5:  293:			while(at_aux)
+        -:  294:			{
+        -:  295:				//Pesquisa o usuário escolhido no Grafo G
+        3:  296:				if(!strcmp(at_aux->pessoa, nome))
+        -:  297:				{
+        2:  298:					return pesquisa_vertice(G, nome);
+        -:  299:				}
+        1:  300:				at_aux = at_aux->prox;
+        -:  301:			}
+        -:  302:		}
+        8:  303:		vt_aux = vt_aux->prox;
+        -:  304:	}
+        2:  305:	return NULL;
+        -:  306:
+        -:  307:}
+        -:  308:
+        -:  309:/************************************************************************************
+        -:  310:* Função: Imprime Lista T
+        -:  311:* Descrição
+        -:  312:*	Imprime lista de requerimentos e de histórico.
+        -:  313:* Parâmetros
+        -:  314:*	T - ponteiro para uma estrutura lista T
+        -:  315:*	flag - identifica se a lista é de requerimentos (flag = 0)
+        -:  316:* ou de histórico (flag = 1).
+        -:  317:* Assertiva de entrada
+        -:  318:*	T necessita ser uma estrutura lista T inicializada.
+        -:  319:*	flag necessita ser um valor 0 ou 1.
+        -:  320:*************************************************************************************/
+        -:  321:
+        -:  322:/** @brief Imprime lista de requerimentos e de histórico.
+        -:  323:*	@param T Ponteiro para uma estrutura lista T
+        -:  324:*	@param flag Identifica se a lista é de requerimentos (flag = 0)
+        -:  325:* ou de histórico (flag = 1).
+        -:  326:*/
+        -:  327:
+        2:  328:void imprime_listaT(p_listaT T, int flag)
+        -:  329:{
+        2:  330:	p_noT no = T->head->prox;
+        -:  331:
+        -:  332:	//percorre lista T
+       14:  333:	while(no)
+        -:  334:	{
+        6:  335:		printf("%s: %s", no->trans, no->pessoa);
+        -:  336:		
+        -:  337:		//caso seja uma lista de histórico e a pessoa não tenha sido avaliada
+        6:  338:		if(flag && !no->aval)
+        3:  339:			printf("(Avalie o usuario.)");
+        3:  340:		else if(flag && no->aval)
+    #####:  341:			printf("(Transacao ja avaliada.)\n");
+        6:  342:		printf("\n");
+        6:  343:		no = no->prox;
+        -:  344:	}
+        2:  345:}

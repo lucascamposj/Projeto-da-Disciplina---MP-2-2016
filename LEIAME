@@ -1,0 +1,48 @@
+Rede Social para Economia Compartilhada
+Projeto de Disciplina - Métodos de Programação 2/2016
+
+João Victor de Souza Poletti	15/0132425
+Lucas Campos Jorge		15/0154135
+
+1) Para compilar modo de Teste, que contem Gtest, testes automatizados e possui flags do gcov, basta digitar
+	make gtest
+   - Para compilar o modo normal do programa, basta digitar
+	make
+Após compilação de ambos os modo o executável gerado será chamado RS.
+
+2) No modo normal de compilação, para entrar na interface de usuário, basta digitar no terminal
+	./RS
+   Caso, queira entrar na interface de administrador, basta digitar no terminal
+	./RS admin
+
+3) AVISO - Não apague arquivos de texto criados pelo programa. Caso queira reiniciar a Rede Social do zero, bastar entrar em cada arquivo de texto e apagar o conteúdo (operação necessária caso queira iniciar a Rede Social após a rotina de testes).
+
+4) Interface
+	Para selecionar opções de menus bastar digitar o valor entre parênteses ao lado da opção desejada (Ex: (2) Adicionar amigos) e apertar ENTER depois.
+
+5) Interface de administrador
+	5.1) Entre as opções do administrador temos:
+		- Mostrar Rede Social: Imprime todas as informações armazenadas do usúários.
+		- Cadastra Transação: Possibilita o cadastro de um tipo de transação nova no sistema. (Ex: Carona, Aluguel, etc)
+		- Decadastar Transação: Possibilita o descadastramento de um tipo de transação.
+
+6) Interface de usuário
+	6.2) Já sou usuário:
+		Caso já seja um usuário cadastrado, bastar digitar o seu nome para entrar em seu perfil
+	6.3) Cadastre-se:
+		Caso ainda não seja usuário, digite informações a seu respeito para se cadastrar, logo após terminar já é possível entrar no seu perfil.
+	6.2) Opções de usuário:
+		Logo após entrar em seu perfil, você verá todas as suas informações e algumas opções
+		Dentre elas:
+		4.2.1) Amigos - Permite ver sua lista de amigos, adicionar e excluir amigos. Para adicionar um amigo bastar selecionar a opção e digitar o nome de um usuário, automaticamente esse usuário virará seu amigo.
+		4.2.2) Transações - Permite pedir transações, aceitar convites de transações, selecionar usuários que aceitaram o convite e ver histórico.
+			Ao pedir uma transação é possível limitar a busca de usuários digitando requisitos, como avaliação miníma e idade mínima, entre outras.
+		4.2.3) Deletar usuário - Deleta todas as suas amizades e o usuário em si.
+		4.2.4) Edita usuário - Possibilita a edição de quaisquer informações do usuário.
+	6.3) Transações:
+		Transações são trocas entre usuários de serviços ou mercadorias definidas por tipo cadastrados pelo administrador do sistema. Para aontecer uma transação (vide 4.2.2):
+		1) Um usuário pede uma transação para usuários com certos requisitos.
+		2) Tais usuários recebem um convite para tal transação e decidem se vão aceitar ou não.
+		3) Após, no mínimo um usuário, aceitaram o convite, o usuário que pediu a transação pode selecionar com quem deseja realizar a transação.
+		4) Tal transação vai para o histórico do usuário, onde é possível avaliar o usuário com quem se realizou a transação. 
+	

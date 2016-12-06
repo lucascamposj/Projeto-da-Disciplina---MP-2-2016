@@ -1,4 +1,3 @@
-
 typedef struct transacao* p_transacao;
 typedef struct lista_trans* p_listatrans;
 typedef struct grafo_trans* p_grafo_trans;
@@ -58,6 +57,7 @@ typedef struct noT
 	char trans[50];
 	char pessoa[50];
 	int aval;//representa na lista de historico se o usuario ja foi avaliado ou nao
+	float nota;
 
 	p_noT prox;
 	p_noT ant;
@@ -106,7 +106,7 @@ void adiciona_aresta_T(p_grafo_trans, char *, char *);
 
 void remove_vertice_T(p_grafo_trans, char *);
 
-void imprime_grafoT(p_grafo_trans );
+void imprime_grafoT(p_grafo_trans);
 
 /*LISTA T*/
 

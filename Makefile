@@ -7,11 +7,11 @@ GTEST =-fprofile-arcs -test-coverage
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-main: $(OBJ) menus_grafo.o
+RS: $(OBJ) rede_social.o
 	gcc -o $@ $^ $(CFLAGS)
 
 gtest:
-	g++ -fprofile-arcs -ftest-coverage -g GTEST.c grafo.c trans.c user.c -o main -lgtest
+	g++ -fprofile-arcs -ftest-coverage -g GTEST.c grafo.c trans.c user.c -o RS -lgtest
 
 clean:
-	rm -rf *o main
+	rm -rf *o RS

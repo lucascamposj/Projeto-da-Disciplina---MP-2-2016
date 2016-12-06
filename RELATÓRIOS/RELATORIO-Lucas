@@ -1,0 +1,23 @@
+19/11/2016 |3h	| Projetar | Discussão do grupo e tomada de decisões
+23/11/2016 |1h	| Especificar funções | Funções de manipulação de arquivos
+23/11/2016 |2h	| Codificar módulo | Módulo de teste e módulo de funções que manipulam arquivos
+23/11/2016 |4h	| Realizar testes | Testando módulo de teste e funções de manipilação de arquivos
+23/11/2016 |30m	| Rodar CPPCheck e retirar warning | Revisando módulo de teste e funções de manipilação de arquivos com CPPCheck, valgrind e Gcov
+25/11/2016 |6h  | Codificar Módulo | Interface com o terminal
+27/11/2016 |6h  | Codificar Módulo | Início do desenvolvimento das estruturas de transações
+03/12/2016 |3h  | Redigir casos de teste | Testes envolvendo transações
+03/12/2016 |2h	| Revisar casos de teste | Testes envolvendo transações
+03/12/2016 |5h	| Revisar código do módulo | Módulo com funções de manipulação de transações
+04/12/2016 |4h  | Codificar módulo | Testes envolvendo funções de transações
+04/12/2016 |4h	| Redigir casos de teste | Testes envolvendo transações
+04/12/2016 |3h	| Codificar Módulo | Manipulação de arquivos envolvendo transações
+05/12/2016 |6h  | Realizar Teste | Testando manipulação de arquivos envolvendo transações
+05/12/2016 |20m | Rodar CPPCheck e Valgrind | Correção de erros de memória
+05/12/2016 |1h	| Documentar Doxygen | Documentar todos os módulos
+05/12/2016 |1h	| Especificar as funções | Especificar e comentar todas as funções
+05/12/2016 |3h	| Realizar os testes | Leitura de todos os arquivos
+06/12/2016 |2h	| Revisar casos de teste | Revisão com bugs na leitura de auivo
+06/12/2016 |3h	| Codificar módulo | Corrigir erros de leitura de arquivo
+06/12/2016 |4h	| Realizar testes | Revisão de todos os testes
+06/12/2016 |2h	| Instrumentar gcov | Testar mais 80% das linhas de cada módulo
+

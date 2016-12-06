@@ -894,6 +894,11 @@ void imprime_grafoT(p_grafo_trans T){
 	/**
 	\param T É o ponteiro para o grafo de transações de um usuário.
 	*/
+	if(!v)
+	{
+		printf("Sem transacoes.\n");
+		return;
+	}
 
 	while(v) // enquanto não chegar ao final da lista de vértices desse grafo
 	{

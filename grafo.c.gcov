@@ -1,0 +1,1080 @@
+        -:    0:Source:grafo.c
+        -:    0:Programs:3
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "grafo.h"
+        -:    6:#include <unistd.h>
+        -:    7:
+        -:    8:#define TRUE 1
+        -:    9:#define FALSE 0
+        -:   10:
+        -:   11:/*
+        -:   12:	FUNCOES
+        -:   13:*/
+        -:   14:/*******************************************************
+        -:   15:*Função: Cria Grafo
+        -:   16:*Descrição
+        -:   17:*	Inicializa uma estrutura de um Grafo.
+        -:   18:*Valor retornado
+        -:   19:*	G - ponteiro para a estrutura Grafo inicializada.
+        -:   20:*Assertiva de saida
+        -:   21:*	O ponteiro G não pode ter valor NULL.
+        -:   22:*********************************************************/
+        -:   23:
+        -:   24:/** @brief Função que inicializa uma estrutura grafo
+        -:   25:*	@return Retorna o ponteiro para uma estrutura grafo inicializada
+        -:   26:*/
+        -:   27:
+       10:   28:p_grafo cria_grafo()
+        -:   29:{
+        -:   30:	p_grafo G; 
+        -:   31:
+       10:   32:	G = (p_grafo)malloc(sizeof(tp_grafo));// aloca-se o grafo(rede social)
+       10:   33:	assert(G); // checa se foi de fato alocado o espaço para o grafo
+        -:   34:
+        -:   35:
+       10:   36:	G->head = (p_vertice)malloc(sizeof(tp_vertice)); //cria-se a célula cabeça
+       10:   37:	assert(G->head);// checa se foi de fato alocado o espaço
+       10:   38:	G->ultimo = G->head;
+        -:   39:
+       10:   40:	G->head->prox = NULL;
+       10:   41:	G->head->ant = NULL;
+        -:   42:
+       10:   43:	return G;
+        -:   44:}
+        -:   45:
+        -:   46:/*******************************************************
+        -:   47:*Função: Destroi Grafo
+        -:   48:*Descrição
+        -:   49:*	Realiza a liberação correta de memória de um Grafo.
+        -:   50:*Parâmetros
+        -:   51:*	G - Ponteiro para uma estrutura de grafo.
+        -:   52:*Assertiva de entrada
+        -:   53:*	A estrutura do grafo necessita estar inicializada. 
+        -:   54:*	G não pode possuir o valor NULL.
+        -:   55:*********************************************************/
+        -:   56:
+        -:   57:/** @brief Realiza a liberação correta de memória de um Grafo.
+        -:   58:*	@param G Ponteiro para uma estrutura de grafo
+        -:   59:*/
+        -:   60:
+        2:   61:void destroi_grafo(p_grafo G)
+        -:   62:{
+        2:   63:	p_vertice v_aux = G->head->prox, v_aux2;
+        -:   64:	p_aresta a_aux, a_aux2;
+        -:   65:
+        2:   66:	assert(G); // checa se o grafo de fato existe
+        -:   67:	/*verifica fim da lista de vertices*/
+       26:   68:	while(v_aux != NULL) // percorre todos os vértices(usuários) até terminar a lista de vértices
+        -:   69:	{
+       12:   70:		a_aux = v_aux->head->prox; // recebe a lista de arestas desse vértice(lista de amigos desse usuário)
+        -:   71:		/*verifica fim da lista de arestas*/         
+       60:   72:		while(a_aux != NULL){
+       24:   73:			a_aux2 = a_aux;
+       24:   74:			a_aux = a_aux->prox;
+       24:   75:			free(a_aux2); // libera essa aresta(amizade)
+        -:   76:		}
+       12:   77:		free(v_aux->head); // libera a célula cabeça desse vértice(usuário)
+       12:   78:		destroi_T(v_aux->usuario.listaT_req);
+       12:   79:		destroi_T(v_aux->usuario.listaT_his);
+       12:   80:		destroi_grafo_T(v_aux->usuario.grafoT);
+       12:   81:		v_aux2 = v_aux;
+       12:   82:		v_aux = v_aux->prox;
+       12:   83:		free(v_aux2); // libere o vértice(usuário)
+        -:   84:	}
+        2:   85:	free(G->head); // libera a célula cabeça do grafo
+        2:   86:	free(G); // libera o grafo
+        2:   87:}
+        -:   88:
+        -:   89:/*******************************************************
+        -:   90:*Função: Adiciona usuário
+        -:   91:*Descrição
+        -:   92:*	Adiciona um usuário a Rede Social.
+        -:   93:*Parâmetros
+        -:   94:*	G - Ponteiro para a estrutura de um grafo.
+        -:   95:*	x - As informações do usuário(tipo estrutura user).
+        -:   96:*Valor retornado
+        -:   97:*	Retorna a macro TRUE caso a o usuário tenha sido inserido
+        -:   98:*de forma correta, caso contrário retorna a macro FALSE.
+        -:   99:*Assertiva de entrada
+        -:  100:*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+        -:  101:*	Nenhum campo de informação do usuário deve conter o caracter '*'.
+        -:  102:*Assertiva de saída
+        -:  103:*	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
+        -:  104:*********************************************************/
+        -:  105:
+        -:  106:/** @brief Adiciona um usuário a Rede Social.
+        -:  107:*	@param G Ponteiro para a estrutura de um grafo.
+        -:  108:*	@param x As informações do usuário (tipo estrutura user).
+        -:  109:*	@return Retorna a macro TRUE caso a o usuário tenha sido inserido
+        -:  110:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  111:*/
+        -:  112:
+       27:  113:int adiciona_usuario(p_grafo G, tp_user x)
+        -:  114:{
+       27:  115:	p_vertice p = G->head->prox;
+        -:  116:
+       27:  117:	assert(G);// checa se o grafo de fato existe
+       27:  118:	if(pesquisa_vertice(G, x.nome) == NULL){ // caso esse usuário não exista(leva-se em consideração o nome fornecido)
+       26:  119:		p = (p_vertice)malloc(sizeof(tp_vertice)); // aloca-se espaço para esse vértice(usuário)
+       26:  120:		assert(p); // checa se foi de fato alocado espaço
+        -:  121:
+       26:  122:		G->ultimo->prox = p;
+       26:  123:		p->ant = G->ultimo;
+       26:  124:		G->ultimo = p;
+       26:  125:		p->prox = NULL;
+        -:  126:
+       26:  127:		p->usuario = x;
+        -:  128:
+       26:  129:		if(x.grafoT)
+       15:  130:			p->usuario.grafoT = x.grafoT;
+        -:  131:		else
+        -:  132:		{
+       11:  133:			p->usuario.grafoT = cria_grafo_T();
+       11:  134:			assert(p->usuario.grafoT);
+        -:  135:		}
+       26:  136:		if(x.listaT_req)
+       12:  137:			p->usuario.listaT_req = x.listaT_req;
+        -:  138:		else
+        -:  139:		{
+       14:  140:			p->usuario.listaT_req = cria_listaT();
+       14:  141:			assert(p->usuario.listaT_req);
+        -:  142:		}
+       26:  143:		if(x.listaT_his)
+       14:  144:			p->usuario.listaT_his = x.listaT_his;
+        -:  145:		else
+        -:  146:		{
+       12:  147:			p->usuario.listaT_his = cria_listaT();
+       12:  148:			assert(p->usuario.listaT_his);
+        -:  149:		}
+       26:  150:		p->head = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a célula cabeça para a sua lista de arestas(amizades)
+       26:  151:		assert(p->head); // checa se foi de fato alocado espaço
+       26:  152:		p->ultimo = p->head;
+       26:  153:		p->head->ant = NULL;
+       26:  154:		p->head->prox = NULL;
+        -:  155:
+        -:  156:
+       26:  157:		return TRUE;
+        -:  158:	}
+        -:  159:	else
+        -:  160:		/*usuario ja existe*/
+        1:  161:		return FALSE;
+        -:  162:}
+        -:  163:
+        -:  164:/*******************************************************
+        -:  165:*Função: Edita usuário
+        -:  166:*Descrição
+        -:  167:*	Edita um usuário da Rede Social.
+        -:  168:*Parâmetros
+        -:  169:*	user - ponteiro para o usuário que deseja-se editar
+        -:  170:*Valor retornado
+        -:  171:*	Retorna a macro TRUE caso a o usuário tenha sido editado
+        -:  172:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  173:*Assertiva de entrada
+        -:  174:*	o usuário deve existir no grafo.
+        -:  175:*	Nenhum campo de informação do usuário deve conter o caracter '*'.
+        -:  176:*Assertiva de saída
+        -:  177:*	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
+        -:  178:*********************************************************/
+        -:  179:
+        -:  180:/** @brief Edita um usuário da Rede Social.
+        -:  181:*	@param user Ponteiro para o usuário que deseja-se editar.
+        -:  182:*	@return Retorna a macro TRUE caso a o usuário tenha sido editado
+        -:  183:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  184:*/
+        -:  185:
+    #####:  186:int edita_usuario(p_user user)
+        -:  187:{
+        -:  188:	char opcao, interesse[200];
+    #####:  189:	int sair = FALSE;
+        -:  190:	int i, j;
+    #####:  191:	do
+        -:  192:	{
+        -:  193:		/*Menu para a edição do usuário*/
+    #####:  194:		sair = FALSE;
+    #####:  195:		system("clear");
+    #####:  196:	    printf("***************OPCOES DE EDICAO***********************\n");
+    #####:  197:	    printf("*(1)Editar nome.                                     *\n");
+    #####:  198:	    printf("*(2)Editar genero.                                   *\n");
+    #####:  199:	    printf("*(3)Editar idade.                                    *\n");
+    #####:  200:	    printf("*(4)Editar escolaridade.                             *\n");
+    #####:  201:	    printf("*(5)Editar cep.                                      *\n");
+    #####:  202:	    printf("*(6)Adicionar interesse.                             *\n");
+    #####:  203:	    printf("*(7)Remover interesse.                               *\n");
+    #####:  204:	    printf("*Para voltar digite x.                               *\n");
+    #####:  205:	    printf("******************************************************\n");
+    #####:  206:	    scanf("%c", &opcao);
+    #####:  207:	    getchar();
+        -:  208:
+    #####:  209:	    switch(opcao)
+        -:  210:	    {
+        -:  211:	    	case '1':
+    #####:  212:	    		printf("Digite o novo nome: ");
+    #####:  213:	    		scanf("%[^\n]s", user->nome);
+    #####:  214:	    		getchar();
+    #####:  215:	    		break;
+        -:  216:			
+        -:  217:			case '2':
+    #####:  218:				printf("Digite o novo gênero: ");
+    #####:  219:	    		scanf("%c", &user->genero);
+    #####:  220:	    		getchar();
+    #####:  221:				break;
+        -:  222:			
+        -:  223:			case '3':
+    #####:  224:				printf("Digite a nova idade: ");
+    #####:  225:	    		scanf("%d", &user->idade);
+    #####:  226:	    		getchar();
+    #####:  227:				break;
+        -:  228:			
+        -:  229:			case '4':
+    #####:  230:				printf("Digite a nova escolaridade: ");
+    #####:  231:	    		scanf("%d", &user->escolaridade);
+    #####:  232:	    		getchar();
+        -:  233:
+    #####:  234:				break;
+        -:  235:			
+        -:  236:			case '5':
+    #####:  237:				printf("Digite o novo cep: ");
+    #####:  238:	    		scanf("%d", &user->cep);
+    #####:  239:	    		getchar();
+        -:  240:
+    #####:  241:				break;
+        -:  242:			
+        -:  243:			case '6':
+    #####:  244:				if(user->n_interesses < 20) // se não atingiu o máximo de interesses possíveis
+        -:  245:				{
+    #####:  246:					printf("Digite um interesse: ");
+    #####:  247:					scanf("%[^\n]s", user->interesses[user->n_interesses]);
+    #####:  248:					getchar();
+    #####:  249:					user->n_interesses++;
+        -:  250:				}
+        -:  251:				else
+        -:  252:				{
+    #####:  253:					printf("Máximo de interesses atingido.\nDigite qualquer tecla para continuar edicao.");
+        -:  254:				}
+    #####:  255:				break;
+        -:  256:			
+        -:  257:			case '7':
+    #####:  258:				if(user->n_interesses > 0) // ele possui algum interesse previamente inserido
+        -:  259:				{
+    #####:  260:					printf("Digite o interesse que deseja remover: ");
+    #####:  261:					scanf("%[^\n]s", interesse);
+    #####:  262:					getchar();
+    #####:  263:					for(i=0;i < user->n_interesses;i++)
+        -:  264:					{
+    #####:  265:						if(!strcmp(user->interesses[i], interesse))
+        -:  266:						{
+    #####:  267:							for(j=i;j<user->n_interesses-1;j++)
+        -:  268:							{
+    #####:  269:								strcpy(user->interesses[j], user->interesses[j+1]);
+        -:  270:							}
+    #####:  271:							user->n_interesses--;
+    #####:  272:							break;
+        -:  273:						}
+        -:  274:					}
+        -:  275:				}	
+        -:  276:				else
+    #####:  277:					printf("Nao possui nenhum interesse.\nDigite qualquer tecla para continuar edicao.\n");
+    #####:  278:				break;
+        -:  279:
+        -:  280:			case 'x':
+    #####:  281:				printf("Edicoes salvas.\n");
+    #####:  282:				sleep(1);
+    #####:  283:				sair = TRUE;
+    #####:  284:				break;
+        -:  285:
+        -:  286:	    }
+    #####:  287:	}while(sair == FALSE);
+    #####:  288:}
+        -:  289:
+        -:  290:/*******************************************************
+        -:  291:*Função: Remove Usuário 
+        -:  292:*Descrição
+        -:  293:*	Remove um usuário da rede social. Além disso, realiza a liberação correta de memória.
+        -:  294:*Parâmetros
+        -:  295:*	G - Ponteiro para a estrutura de um grafo.
+        -:  296:*	x - nome do usuário a ser removido.
+        -:  297:*Valor retornado
+        -:  298:*	Retorna a macro TRUE caso a o usuário tenha sido removido
+        -:  299:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  300:*Assertiva de entrada
+        -:  301:*	A estrutura do grafo necessitar estar inicializada. G não pode possuir o valor NULL.
+        -:  302:*Assertiva de saída
+        -:  303:*	Remove o usuário da rede social, caso ele exista(checa se o nome existe no grafo).
+        -:  304:*********************************************************/
+        -:  305:
+        -:  306:/** @brief Remove um usuário da rede social. Além disso, realiza a liberação correta de memória.
+        -:  307:*	@param G Ponteiro para a estrutura de um grafo.
+        -:  308:*	@param x Nome do usuário a ser removido.
+        -:  309:*	@return Retorna a macro TRUE caso a o usuário tenha sido removido
+        -:  310:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  311:*/
+        -:  312:
+        5:  313:int remove_usuario(p_grafo G, char *x)
+        -:  314:{
+        5:  315:	p_vertice v_aux = G->head->prox;
+        5:  316:	p_aresta a_aux = NULL, a_aux2 = NULL;
+        -:  317:
+        5:  318:	assert(G); // checa se o grafo já existe
+        -:  319:
+        5:  320:	v_aux = pesquisa_vertice(G, x); // recebe o ponteiro para o vértice(usuário) que possui esse nome
+        -:  321:
+        5:  322:	if(v_aux == NULL) // usuário não existe
+        -:  323:	{
+        2:  324:		return FALSE;
+        -:  325:	}
+        -:  326:	else
+        -:  327:	{	// percorre o grafo removendo a amizade
+        3:  328:		a_aux = v_aux->head->prox; // recebe a lista de amizades(arestas) desse usuário
+        7:  329:		while(a_aux)
+        -:  330:		{
+        2:  331:			a_aux2 = a_aux->amigo->head->prox; // recebe a lista de amizades desse amigo do usuário
+        -:  332:			/*percorrendo amigo e elimando amizade com o usuario*/
+        2:  333:			while(a_aux2)
+        -:  334:			{
+        2:  335:				if(a_aux2->amigo == v_aux) // se a amizade foi encontrada
+        -:  336:				{
+        2:  337:					if(a_aux2 == a_aux->amigo->ultimo)
+        2:  338:						a_aux->amigo->ultimo = a_aux2->ant;
+        -:  339:					else
+    #####:  340:						a_aux2->prox->ant = a_aux2->ant;
+        2:  341:					a_aux2->ant->prox = a_aux2->prox;
+        -:  342:
+        2:  343:					free(a_aux2); // libera a aresta(amizade)
+        2:  344:					break;
+        -:  345:				}
+    #####:  346:				a_aux2 = a_aux2->prox;
+        -:  347:			}
+        -:  348:			/*
+        -:  349:			remove_amizade(G, a_aux->amigo->usuario.nome, v_aux->usuario.nome);
+        -:  350:			*/
+        -:  351:			//aproveitando o a_aux2, eliminando o amigo da lista do usuario
+        2:  352:			if(a_aux == v_aux->ultimo)
+        1:  353:				v_aux->ultimo = a_aux->ant;
+        -:  354:			else
+        1:  355:				a_aux->prox->ant = a_aux->ant;
+        2:  356:			v_aux->ant->prox = v_aux->prox;
+        -:  357:
+        2:  358:			a_aux2 = a_aux;
+        2:  359:			a_aux = a_aux->prox;
+        2:  360:			free(a_aux2);
+        -:  361:		}
+        -:  362:		// eliminando o vértice no grafo
+        3:  363:		if(v_aux == G->ultimo)
+        1:  364:			G->ultimo = v_aux->ant;
+        -:  365:		else
+        2:  366:			v_aux->prox->ant = v_aux->ant;
+        -:  367:		
+        3:  368:		v_aux->ant->prox = v_aux->prox;
+        -:  369:		
+        3:  370:		free(v_aux->head);
+        3:  371:		free(v_aux);
+        -:  372:
+        3:  373:		return TRUE;
+        -:  374:	}
+        -:  375:}
+        -:  376:
+        -:  377:/*******************************************************
+        -:  378:*Função: Adiciona Amizade
+        -:  379:*Descrição
+        -:  380:*	Adiciona amizade entre dois usuários.
+        -:  381:*Parâmetros
+        -:  382:*	G - Ponteiro para a estrutura de um grafo.
+        -:  383:*	x - Nome de um dos usuários.
+        -:  384:*	y - Nome do outro usuário.
+        -:  385:*Valor retornado
+        -:  386:*	Retorna a macro TRUE caso a amizade tenha sido adicionada
+        -:  387:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  388:*Assertiva de entrada
+        -:  389:*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+        -:  390:*Assertiva de saída
+        -:  391:*	Adiciona amizade, tanto de x com y, quanto de y com x. Isso só é feito de x e y existem na rede social.
+        -:  392:*********************************************************/
+        -:  393:
+        -:  394:/** @brief Adiciona amizade entre dois usuários.
+        -:  395:*	@param G Ponteiro para a estrutura de um grafo.
+        -:  396:*	@param x Nome de um dos usuários.
+        -:  397:*	@param y Nome do outro usuário.
+        -:  398:*	@return Retorna a macro TRUE caso a amizade tenha sido adicionada
+        -:  399:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  400:*/
+        -:  401:
+       26:  402:int adiciona_amizade(p_grafo G,char *x, char *y)
+        -:  403:{
+       26:  404:	p_vertice v_x = G->head, v_y = NULL;
+        -:  405:	p_aresta a_aux;
+        -:  406:
+       26:  407:	assert(G); // checa se o grafo já existe
+        -:  408:
+        -:  409:	/*Checa se os dois usuários, com os nomes fornecidos, existem*/
+       26:  410:	if((v_x = pesquisa_vertice(G, x)) != NULL && (v_y = pesquisa_vertice(G, y)) != NULL)
+       25:  411:		if(pesquisa_aresta(v_x, y) == NULL){
+        -:  412:			/*adicionando a amizade em x*/
+       18:  413:			a_aux = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a aresta(amizade)
+       18:  414:			assert(a_aux); // checa se foi alocada
+       18:  415:			a_aux->ant = v_x->ultimo; // faz o encadeamento
+       18:  416:			v_x->ultimo->prox = a_aux;
+       18:  417:			a_aux->prox = NULL;
+        -:  418:
+       18:  419:			v_x->ultimo = a_aux; // insere no final da lista de amizades
+       18:  420:			a_aux->amigo = v_y;
+        -:  421:
+        -:  422:			/*adicionando em y*/
+       18:  423:			a_aux = (p_aresta)malloc(sizeof(tp_aresta));// aloca-se a aresta(amizade)
+       18:  424:			assert(a_aux);// checa se foi alocada
+       18:  425:			a_aux->ant = v_y->ultimo;// faz o encadeamento
+       18:  426:			v_y->ultimo->prox = a_aux;
+       18:  427:			a_aux->prox = NULL;
+        -:  428:
+       18:  429:			v_y->ultimo = a_aux;// insere no final da lista de amizades
+       18:  430:			a_aux->amigo = v_x;
+        -:  431:			
+       18:  432:			return TRUE;
+        -:  433:		}
+        -:  434:		else // não existe amizade entre os 2 usuários
+        7:  435:			return FALSE;
+        -:  436:	else// algum usuário inserido não existe
+        1:  437:		return FALSE;
+        -:  438:}
+        -:  439:
+        -:  440:/*******************************************************
+        -:  441:*Função: Remove Amizade
+        -:  442:*Descrição
+        -:  443:*	Remove amizade entre dois usuários.
+        -:  444:*Parâmetros
+        -:  445:*	G - Ponteiro para a estrutura de um grafo.
+        -:  446:*	x - Nome de um usuário.
+        -:  447:*	y - Nome de um usuário.
+        -:  448:*Valor retornado
+        -:  449:*	Retorna a macro TRUE caso a amizade tenha sido removida
+        -:  450:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  451:*Assertiva de entrada
+        -:  452:*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+        -:  453:*Assertiva de saída
+        -:  454:*	Remove a amizade entre o usuário x e y, caso os 2 nomes existam na rede social.
+        -:  455:*********************************************************/
+        -:  456:
+        -:  457:/** @brief Remove amizade entre dois usuários.
+        -:  458:*	@param G Ponteiro para a estrutura de um grafo.
+        -:  459:*	@param x Nome de um usuário.
+        -:  460:*	@param y Nome de um usuário.
+        -:  461:*	@return Retorna a macro TRUE caso a amizade tenha sido removida
+        -:  462:*de forma correta, caso contrário retorna a macro FALSE.
+        -:  463:*/
+        -:  464:
+        3:  465:int remove_amizade(p_grafo G,char *x, char *y)
+        -:  466:{
+        3:  467:	p_vertice v_x = NULL, v_y = NULL;
+        -:  468:	p_aresta a_aux;
+        -:  469:
+        3:  470:	assert(G); // checa se o grafo já existe
+        -:  471:
+        -:  472:	/*Checa se os dois usuários, com os nomes fornecidos, existem*/
+        3:  473:	if((v_x = pesquisa_vertice(G, x)) != NULL && (v_y = pesquisa_vertice(G, y)) != NULL){
+        -:  474:		/*Checa se existe amizade entre esses 2 usuários*/
+        2:  475:		if((a_aux = pesquisa_aresta(v_x, y)) != NULL){
+        1:  476:			if(a_aux == v_x->ultimo)
+        1:  477:				v_x->ultimo = a_aux->ant;
+        -:  478:			else
+    #####:  479:				a_aux->prox->ant = a_aux->ant;
+        -:  480:			
+        1:  481:			a_aux->ant->prox = a_aux->prox;
+        -:  482:
+        1:  483:			free(a_aux);
+        -:  484:		}else
+        1:  485:			return FALSE;// não existe amizade
+        1:  486:		if((a_aux = pesquisa_aresta(v_y, x)) != NULL){
+        1:  487:			if(a_aux == v_y->ultimo)
+        1:  488:				v_y->ultimo = a_aux->ant;
+        -:  489:			else
+    #####:  490:				a_aux->prox->ant = a_aux->ant;
+        -:  491:			
+        1:  492:			a_aux->ant->prox = a_aux->prox;
+        -:  493:
+        1:  494:			free(a_aux);
+        -:  495:		}
+        1:  496:		return TRUE;
+        -:  497:	}
+        -:  498:	else // algum dos 2 usuários inseridos não existe
+        1:  499:		return FALSE;
+        -:  500:} 
+        -:  501:
+        -:  502:/*
+        -:  503:	FUNCOES EXTRAS
+        -:  504:*/
+        -:  505:
+        -:  506:/*******************************************************
+        -:  507:*Função: Grafo vazio
+        -:  508:*Descrição
+        -:  509:*	Verifica se uma esturutra grafo está vazia.
+        -:  510:*Parâmetros
+        -:  511:*	G - Estrutura de um grafo.
+        -:  512:*Valor retornado
+        -:  513:*	Retorna um valor into que indica se a rede social está vazia ou não.
+        -:  514:*	True - caso a rede esteja vazia.
+        -:  515:*	False - caso contrário.
+        -:  516:*Assertiva de entrada
+        -:  517:*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+        -:  518:*********************************************************/
+        -:  519:
+        -:  520:/** @brief Verifica se uma esturutra grafo está vazia.
+        -:  521:*	@param G Estrutura de um grafo.
+        -:  522:*	@return Retorna um valor into que indica se a rede social está vazia ou não.
+        -:  523:*	True - caso a rede esteja vazia.
+        -:  524:*	False - caso contrário.
+        -:  525:*/
+        -:  526:
+       97:  527:int grafo_vazio(p_grafo G)
+        -:  528:{
+       97:  529:	if(G->head == G->ultimo) // se a célula cabeça é o fim do grafo
+       13:  530:		return TRUE;
+        -:  531:	else 
+       84:  532:		return FALSE;
+        -:  533:}
+        -:  534:
+        -:  535:/*******************************************************
+        -:  536:*Função: Vértice isolado
+        -:  537:*Descrição
+        -:  538:*	Verifica se um usuário não possui amizades.
+        -:  539:*Parâmetros
+        -:  540:*	A - Ponteiro para a estrutura de um vértice.
+        -:  541:*Valor retornado
+        -:  542:*	Retorna um valor into que indica se um vértice não possui arestas.
+        -:  543:*	True - Caso o vértice não possua arestas.
+        -:  544:*	False - Caso contrário.
+        -:  545:*Assertiva de entrada
+        -:  546:*	A estrutura do vértice necessita estar inicializada. A não pode possuir o valor NULL.
+        -:  547:*********************************************************/
+        -:  548:
+        -:  549:/** @brief Verifica se um usuário não possui amizades.
+        -:  550:*	@param A Ponteiro para a estrutura de um vértice.
+        -:  551:*	@return Retorna um valor into que indica se um vértice não possui arestas.
+        -:  552:*	True - Caso o vértice não possua arestas.
+        -:  553:*	False - Caso contrário.
+        -:  554:*/
+        -:  555:
+       33:  556:int vertice_vazio(p_vertice A)
+        -:  557:{
+       33:  558:	if(A->head == A->ultimo) // se a célula cabeça é o fim do grafo
+       10:  559:		return TRUE;
+        -:  560:	else
+       23:  561:		return FALSE;
+        -:  562:}
+        -:  563:/*******************************************************
+        -:  564:*Função: Pesquisa Vertice
+        -:  565:*Descrição
+        -:  566:*	Usada em outras funções, esta realiza uma busca na rede para verificar se, dado um nome, 
+        -:  567:*existe um usuário com este nome.
+        -:  568:*Parâmetros
+        -:  569:*	G - Ponteiro para a estrutura de um grafo.
+        -:  570:*	x - Nome de um usuário.
+        -:  571:*
+        -:  572:*Valor retornado
+        -:  573:*	p - Ponteiro para o usuário com este nome(foi encontrado).
+        -:  574:*	NULL - Este nome não existe na rede social(não foi encontrado).
+        -:  575:*
+        -:  576:Assertiva de entrada
+        -:  577:*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+        -:  578:*********************************************************/
+        -:  579:
+        -:  580:/** @brief Usada em outras funções, esta realiza uma busca na rede para verificar se, dado um nome, 
+        -:  581:*existe um usuário com este nome.
+        -:  582:*	@param G Ponteiro para a estrutura de um grafo.
+        -:  583:*	@param x Nome de um usuário.
+        -:  584:*	@return p - Ponteiro para o usuário com este nome(foi encontrado).
+        -:  585:*	NULL - Este nome não existe na rede social(não foi encontrado).
+        -:  586:*/
+        -:  587:
+       95:  588:p_vertice pesquisa_vertice (p_grafo G, char *x){
+       95:  589:	p_vertice p = G->head->prox;
+        -:  590:
+       95:  591:	assert(G);
+        -:  592:
+        -:  593:	/*Se o grafo não está vazio*/
+       95:  594:	if(grafo_vazio(G) == FALSE){
+      311:  595:		while(p != NULL){ // enquanto não chegar no final da lista de usuários
+      177:  596:			if(strcmp(x, p->usuario.nome) == 0) // compara o nome, se for igual ao do inserido via terminal
+       63:  597:				break;
+      114:  598:			p = p->prox;
+        -:  599:		}
+       83:  600:		if(p != NULL)
+       63:  601:			return p; // retorna o ponteiro para esse usuário
+        -:  602:		else
+       20:  603:			return NULL;
+        -:  604:	}
+        -:  605:	else // grafo não possui vértices(usuários)
+        -:  606:	{
+       12:  607:		return NULL;
+        -:  608:	}
+        -:  609:}
+        -:  610:/*******************************************************
+        -:  611:*Função: Pesquisa aresta
+        -:  612:*Descrição
+        -:  613:*	Realiza uma busca na lista de amizades de um dado usuário(caso ele exista), em busca de
+        -:  614:*	uma determinada amizade.
+        -:  615:*
+        -:  616:*Parâmetros
+        -:  617:*	V - Ponteiro para o usuário.
+        -:  618:*	x - Nome de um usuário(suposta amizade).
+        -:  619:*
+        -:  620:*Valor retornado
+        -:  621:*	p - Ponteiro para o usuário com este nome(foi encontrada a amizade).
+        -:  622:*	NULL - Este nome não existe na lista de amizades deste usuário(não foi encontrado).
+        -:  623:*
+        -:  624:*Assertiva de entrada
+        -:  625:*	V não pode ser NULL; deve estar inicializado.
+        -:  626:*	x deve ser diferente de NULL.			
+        -:  627:*********************************************************/
+        -:  628:
+        -:  629:/** @brief Realiza uma busca na lista de amizades de um dado usuário(caso ele exista), em busca de
+        -:  630:*	uma determinada amizade.
+        -:  631:*	@param V Ponteiro para o usuário.
+        -:  632:*	@param x Nome de um usuário(suposta amizade).
+        -:  633:*	@return p - Ponteiro para o usuário com este nome(foi encontrada a amizade).
+        -:  634:*	NULL - Este nome não existe na lista de amizades deste usuário(não foi encontrado).
+        -:  635:*/
+        -:  636:
+       31:  637:p_aresta pesquisa_aresta(p_vertice  V, char *x){
+       31:  638:	p_aresta p = V->head->prox;
+        -:  639:
+       31:  640:	assert(V);// checa se o vértice existe(foi alocado da forma correta)
+       31:  641:	assert(x);
+        -:  642:
+       31:  643:	if(vertice_vazio(V) == FALSE){ // se o usuário possuir amizades
+       66:  644:		while(p != NULL){
+       32:  645:			if(strcmp(x, p->amigo->usuario.nome) == 0) // percorre sua lista de amizades até encontrar
+       10:  646:				break;
+       22:  647:			p = p->prox;
+        -:  648:		}
+       22:  649:		if(p != NULL) // se encontrou
+       10:  650:			return p; // retorna ponteiro para esse amigo
+        -:  651:		else
+       12:  652:			return NULL;
+        -:  653:	}
+        -:  654:	else
+        -:  655:	{
+        9:  656:		return NULL;
+        -:  657:	}
+        -:  658:}
+        -:  659:/*******************************************************
+        -:  660:*Função: Imprime grafo
+        -:  661:*Descrição
+        -:  662:*	Imprime todas as informações da rede social, bem como:
+        -:  663:*	Usuários, amizades e transações.
+        -:  664:*
+        -:  665:*Parâmetros
+        -:  666:*	G - ponteiro para estrutura grafo.	
+        -:  667:*
+        -:  668:*Assertiva de entrada
+        -:  669:*	o grafo deve estar inicializado.		
+        -:  670:*********************************************************/
+        -:  671:
+        -:  672:/** @brief Imprime todas as informações da rede social, bem como:
+        -:  673:*	Usuários, amizades e transações.
+        -:  674:*	@param G ponteiro para estrutura grafo.
+        -:  675:*/
+        -:  676:
+        1:  677:void imprime_grafo(p_grafo G)
+        -:  678:{
+        1:  679:	p_vertice v_aux = G->head->prox;
+        -:  680:	p_aresta a_aux;
+        -:  681:	int i;
+        -:  682:
+       13:  683:	while(v_aux) // enquanto não chegar no final da lista de usuários
+        -:  684:	{
+        -:  685:		// imprime o nome e o endereço desse usuário, bem como o endereço do usuário anteror e posterior
+        6:  686:		printf("%s: %p | ant: %p | prox: %p\n", v_aux->usuario.nome,v_aux,v_aux->ant,v_aux->prox); 
+        6:  687:		a_aux = v_aux->head->prox;
+        -:  688:		// imprime as informações deste usuário(genero, idade, escolaridade, cep, interesses)
+        6:  689:		printf("\t%c\n", v_aux->usuario.genero);
+        6:  690:		printf("\t%d\n", v_aux->usuario.idade);
+        6:  691:		printf("\t%d\n", v_aux->usuario.escolaridade);
+        6:  692:		printf("\t%d\n", v_aux->usuario.cep);
+        6:  693:		printf("\tInteresses:\n");
+       18:  694:		for(i = 0; i < v_aux->usuario.n_interesses; i++)
+        -:  695:		{
+       12:  696:			printf("\t");
+       12:  697:			puts(v_aux->usuario.interesses[i]);
+        -:  698:		}
+        -:  699:		// imprime o endereço da lista de amizades 
+        6:  700:		printf("\t\tHEAD: %p | ant: %p | prox: %p\n", v_aux->head,v_aux->head->ant,v_aux->head->prox);
+       30:  701:		while(a_aux)
+        -:  702:		{
+       12:  703:			printf("\t\t%s: %p | ant: %p | prox: %p\n",a_aux->amigo->usuario.nome,a_aux,a_aux->ant,a_aux->prox);
+       12:  704:			a_aux = a_aux->prox;
+        -:  705:		}
+        6:  706:		v_aux = v_aux->prox;
+        -:  707:	}
+        1:  708:}
+        -:  709:/*******************************************************
+        -:  710:*Função: Salva grafo
+        -:  711:*Descrição
+        -:  712:*	Salva as informações da rede social(usuários e amizades) num arquivo(user.txt)
+        -:  713:*
+        -:  714:*Parâmetros
+        -:  715:*	G - ponteiro para estrutura grafo.	
+        -:  716:*Valor retornado
+        -:  717:*	Retorna a macro TRUE caso o grafo tenha salvo corretamente retorna TRUE,
+        -:  718:*caso contrário, retorna FALSE.
+        -:  719:*Assertiva de entrada
+        -:  720:*	o grafo deve estar inicializado.		
+        -:  721:*********************************************************/
+        -:  722:
+        -:  723:/** @brief Salva as informações da rede social(usuários e amizades) num arquivo(user.txt)
+        -:  724:*	@param G Ponteiro para estrutura grafo.
+        -:  725:*	@return Retorna a macro TRUE caso o grafo tenha salvo corretamente retorna TRUE,
+        -:  726:*	caso contrário, retorna FALSE.
+        -:  727:*/
+        -:  728:
+        1:  729:int salva_grafo(p_grafo G)
+        -:  730:{
+        -:  731:	FILE *arq;
+        1:  732:	p_vertice v = G->head->prox;
+        1:  733:	p_aresta a = NULL;
+        -:  734:	p_verticeT vt_aux; 
+        -:  735:	p_arestaT  at_aux;
+        -:  736:	p_noT no;
+        -:  737: 	int i,j;
+        -:  738:
+        -:  739:
+        1:  740:	if(!(arq = fopen("user.txt", "w"))){
+    #####:  741:		return FALSE;
+        -:  742:	}
+       13:  743:	while(v)
+        -:  744:	{
+        6:  745:		fprintf(arq, ".");
+        6:  746:		fprintf(arq, "%ld", strlen(v->usuario.nome));
+       36:  747:		for(i=0;i<strlen(v->usuario.nome); i++)
+       30:  748:			fprintf(arq, "%c", v->usuario.nome[i]);
+        6:  749:		fprintf(arq,"\n");
+        6:  750:		fprintf(arq, "%c %d %d %d ", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+        6:  751:		fprintf(arq, "%.1f %.1f\n", v->usuario.soma_aval,v->usuario.quant_aval);
+        6:  752:		fprintf(arq, "%d\n", v->usuario.n_interesses);
+        -:  753:		
+       18:  754:		for(j=0;j<v->usuario.n_interesses;j++)
+        -:  755:		{	
+       12:  756:			fprintf(arq,"%ld", strlen(v->usuario.interesses[j]));
+      252:  757:			for(i=0;i<strlen(v->usuario.interesses[j]); i++)
+      240:  758:				fprintf(arq, "%c", v->usuario.interesses[j][i]);
+       12:  759:			fprintf(arq, "\n");
+        -:  760:		}
+        6:  761:		fprintf(arq, "*\n");
+        6:  762:		vt_aux = v->usuario.grafoT->head->prox;
+       42:  763:		while(vt_aux){
+       18:  764:			fprintf(arq, "%s", vt_aux->trans);
+       18:  765:			at_aux = vt_aux->head->prox;
+       54:  766:			while(at_aux){
+       18:  767:				fprintf(arq,"/%s", at_aux->pessoa);
+       18:  768:				at_aux = at_aux->prox;
+        -:  769:			}
+       18:  770:			fprintf(arq, "\n");
+       18:  771:			vt_aux = vt_aux->prox;
+        -:  772:		}
+        6:  773:		fprintf(arq, "*\n");
+        6:  774:		no = v->usuario.listaT_req->head->prox;
+       42:  775:		while(no){
+       18:  776:			fprintf(arq, "%s/%s\n", no->trans, no->pessoa);
+       18:  777:			no = no->prox;
+        -:  778:		}
+        6:  779:		fprintf(arq, "*\n");
+        6:  780:		no = v->usuario.listaT_his->head->prox;
+       42:  781:		while(no){
+       18:  782:			fprintf(arq, "%s/%s/%d\n", no->trans, no->pessoa, no->aval);
+       18:  783:			no = no->prox;
+        -:  784:		}
+        6:  785:		fprintf(arq, "*\n");
+        6:  786:		a = v->head->prox;
+       30:  787:		while(a)
+        -:  788:		{
+       12:  789:			fprintf(arq, "%ld", strlen(a->amigo->usuario.nome));
+       12:  790:			fprintf(arq, "%s\n", a->amigo->usuario.nome);
+       12:  791:			a = a->prox;
+        -:  792:		}
+        6:  793:		fprintf(arq, "*\n");
+        6:  794:		v = v->prox;
+        -:  795:	}
+        -:  796:
+        1:  797:	fclose(arq);
+        1:  798:	return TRUE;
+        -:  799:}
+        -:  800:/*******************************************************
+        -:  801:*Função: Carrega grafo
+        -:  802:*Descrição
+        -:  803:*	Lê o arquivo "user.txt" e armazena suas informações no grafo(rede social)
+        -:  804:*Valor retornado
+        -:  805:*	G - Retorna o grafo contendo as informações do user.txt(rede social)		
+        -:  806:*********************************************************/
+        -:  807:
+        -:  808:/** @brief Lê o arquivo "user.txt" e armazena suas informações no grafo(rede social)
+        -:  809:*	@return Retorna o grafo contendo as informações do user.txt(rede social)
+        -:  810:*/
+        -:  811:
+        1:  812:p_grafo carrega_grafo()
+        -:  813:{
+        -:  814:	FILE *arq;
+        1:  815:	p_grafo G = NULL;
+        -:  816:	tp_user user;
+        -:  817:	char nome[50], amigo[50], c;
+        1:  818:	p_aresta a = NULL;
+        -:  819:	int size,i,j;
+        -:  820:	char s[50], trans[50];
+        -:  821:	p_listaT listaT;
+        -:  822:	p_verticeT verticeT; 
+        -:  823:	p_noT no;
+        -:  824:
+        1:  825:	G = cria_grafo();
+        1:  826:	if (!(arq = fopen("user.txt","r")))
+        -:  827:	{
+    #####:  828:		printf("Arquivo não pode ser aberto\n");
+    #####:  829:		return G;
+        -:  830:	}
+        -:  831:	else
+        -:  832:	{
+        1:  833:		if(fgetc(arq) != '.')
+    #####:  834:			return G;
+        -:  835:		else
+        -:  836:		{
+        6:  837:			do{
+        6:  838:				fscanf(arq, "%d", &size);
+        6:  839:				fgets(user.nome, size+1, arq);
+        6:  840:				fgetc(arq);
+        6:  841:				fscanf(arq,"%c", &user.genero);
+        6:  842:				fgetc(arq);
+        6:  843:				fscanf(arq,"%d", &user.idade);
+        6:  844:				fgetc(arq);
+        6:  845:				fscanf(arq,"%d", &user.escolaridade);
+        6:  846:				fgetc(arq);
+        6:  847:				fscanf(arq,"%d", &user.cep);
+        6:  848:				fgetc(arq);
+        6:  849:				fscanf(arq,"%f", &user.soma_aval);
+        6:  850:				fgetc(arq);
+        6:  851:				fscanf(arq,"%f", &user.quant_aval);
+        6:  852:				fgetc(arq);
+        6:  853:				fscanf(arq,"%d", &user.n_interesses);
+        6:  854:				fgetc(arq);
+       18:  855:				for(i=0;i<user.n_interesses;i++)
+        -:  856:				{
+       12:  857:					fscanf(arq, "%d", &size);
+       12:  858:					fgets(user.interesses[i], size+1, arq);
+       12:  859:					fgetc(arq);
+        -:  860:				}
+        6:  861:				fgetc(arq); //pega separador
+        6:  862:				fgetc(arq);
+        6:  863:				user.grafoT = cria_grafo_T();
+        -:  864:				
+       42:  865:				while(!feof(arq))
+        -:  866:				{
+       24:  867:					i = 0;	
+       24:  868:					c = 0;
+      252:  869:					while((c = fgetc(arq)) != '/' && c != '\n'){
+      114:  870:						s[i] = c;
+      114:  871:						i++;
+        -:  872:					}
+       24:  873:					s[i] = '\0';
+       24:  874:					if(s[0] == '*' || s[0] == '0')
+        -:  875:					{
+        -:  876:						break;
+        -:  877:					}
+       18:  878:					verticeT = adiciona_vertice_T(user.grafoT, s);
+       54:  879:					while(c != '\n'){
+       18:  880:						i = 0;
+      162:  881:						while((c = fgetc(arq)) != '/' && c != '\n'){
+       72:  882:							s[i] = c;
+       72:  883:							i++;
+        -:  884:						}
+       18:  885:						s[i] = '\0';
+       18:  886:						adiciona_aresta_T(user.grafoT, verticeT->trans, s);
+        -:  887:					}
+        -:  888:				}
+        -:  889:				
+        6:  890:				c = 0;
+        -:  891:
+        6:  892:				user.listaT_req = cria_listaT();
+       42:  893:				while(!feof(arq)){
+       24:  894:					i = 0;
+      252:  895:					while((c = fgetc(arq)) != '/' && c != '\n'){
+      114:  896:						trans[i] = c;
+      114:  897:						i++;
+        -:  898:					}
+       24:  899:					if(trans[0] == '*' || trans[0] == '0')
+        -:  900:						break;
+       18:  901:					trans[i] = '\0';
+       18:  902:					i = 0;
+      162:  903:					while((c = fgetc(arq)) != '\n'){
+       72:  904:						nome[i] = c;
+       72:  905:						i++;
+        -:  906:					}
+       18:  907:					nome[i] = '\0';
+       18:  908:					adicionaNO(user.listaT_req, trans, nome);
+        -:  909:				}
+        -:  910:
+        6:  911:				user.listaT_his = cria_listaT();
+       42:  912:				while(!feof(arq)){
+       24:  913:					i = 0;
+      252:  914:					while((c = fgetc(arq)) != '/' && c != '\n'){
+      114:  915:						trans[i] = c;
+      114:  916:						i++;
+        -:  917:					}
+       24:  918:					if(trans[0] == '*')
+        6:  919:						break;
+       18:  920:					trans[i] = '\0';
+       18:  921:					i = 0;
+      162:  922:					while((c = fgetc(arq)) != '/' && c != EOF){
+       72:  923:						nome[i] = c;
+       72:  924:						i++;
+        -:  925:					}
+       18:  926:					nome[i] = '\0';
+       18:  927:					no = adicionaNO(user.listaT_his, trans, nome);
+       18:  928:					fscanf(arq,"%d",&no->aval);
+       18:  929:					fgetc(arq);
+        -:  930:				}
+      198:  931:				while(fgetc(arq) != '.'){
+       97:  932:					if(feof(arq))
+        1:  933:						break;
+        -:  934:				}
+        6:  935:				adiciona_usuario(G, user);
+        6:  936:			}while(!feof(arq));
+        -:  937:
+        1:  938:			fseek(arq, 0, SEEK_SET);
+        7:  939:			do{
+        7:  940:				if(fgetc(arq) == '.'){
+        6:  941:					fscanf(arq, "%d", &size);
+        6:  942:					fgets(nome, size+1, arq);
+       30:  943:					for(i = 0; i < 4; i++)
+     2220:  944:						while((c = fgetc(arq)) != '*')
+        -:  945:						{
+     1098:  946:							if(feof(arq))
+    #####:  947:								break;
+        -:  948:						}
+        6:  949:					c = fgetc(arq);
+       12:  950:					do{
+       18:  951:						fscanf(arq, "%d", &size);
+       18:  952:						fgets(amigo, size+1, arq);
+       18:  953:						if(strcmp(amigo,"*\n"))
+       12:  954:							adiciona_amizade(G, nome, amigo);
+        -:  955:						else{ 
+        6:  956:							break;
+        -:  957:						}
+       12:  958:						fgetc(arq);
+       12:  959:					}while(!feof(arq));
+        -:  960:				}
+        7:  961:			}while(!feof(arq));
+        -:  962:		}
+        -:  963:	}
+        1:  964:	fclose(arq);
+        1:  965:	return G;
+        -:  966:}
+        -:  967:
+        1:  968:void imprime_rede_social(p_grafo G)
+        -:  969:{
+        1:  970:	p_vertice v_aux = G->head->prox;
+        -:  971:	p_aresta a_aux;
+        -:  972:	p_arestaT at_aux;
+        -:  973:	p_verticeT vt_aux;
+        -:  974:	p_noT no;
+        -:  975:	int i;
+        -:  976:
+       13:  977:	while(v_aux)
+        -:  978:	{
+        -:  979:		// imprime o nome e o endereço desse usuário, bem como o endereço do usuário anteror e posterior
+        6:  980:		printf("%s: %p | ant: %p | prox: %p\n", v_aux->usuario.nome,v_aux,v_aux->ant,v_aux->prox); 
+        -:  981:		// imprime as informações deste usuário(genero, idade, escolaridade, cep, interesses)
+        6:  982:		printf("\tGenero:%c\n", v_aux->usuario.genero);
+        6:  983:		printf("\tIdade:%d\n", v_aux->usuario.idade);
+        6:  984:		printf("\tEscolaridade: ");
+        6:  985:		switch(v_aux->usuario.escolaridade)
+        -:  986:		{
+        -:  987:			case 1:
+        1:  988:				printf("Primeiro grau incompleto.\n");
+        1:  989:				break;
+        -:  990:			case 2:
+        1:  991:				printf("Primeiro grau completo.\n");
+        -:  992:			
+        1:  993:				break;
+        -:  994:			case 3:
+        1:  995:				printf("Segundo grau incompleto.\n");
+        -:  996:			
+        1:  997:				break;
+        -:  998:			case 4:
+        1:  999:				printf("Segundo grau completo.\n");
+        -: 1000:			
+        1: 1001:				break;
+        -: 1002:			case 5:
+        1: 1003:				printf("Superior incompleto.\n");
+        -: 1004:			
+        1: 1005:				break;
+        -: 1006:			case 6:
+    #####: 1007:				printf("Pos-graduacao.\n");
+        -: 1008:
+        -: 1009:
+        -: 1010:		}
+        -: 1011:
+        6: 1012:		printf("\tCEP:%d\n", v_aux->usuario.cep);
+        6: 1013:		if(v_aux->usuario.quant_aval)
+    #####: 1014:			printf("\tAvaliacao:%.1f\n", v_aux->usuario.soma_aval/v_aux->usuario.quant_aval);
+        -: 1015:		else
+        6: 1016:			printf("Sem avaliacao.\n");
+        6: 1017:		printf("\tInteresses:\n");
+       18: 1018:		for(i = 0; i < v_aux->usuario.n_interesses; i++)
+        -: 1019:		{
+       12: 1020:			printf("\t");
+       12: 1021:			puts(v_aux->usuario.interesses[i]);
+        -: 1022:		}
+        -: 1023:		
+        6: 1024:		vt_aux = v_aux->usuario.grafoT->head->prox;
+        6: 1025:		printf("\tGRAFO DE PEDIDOS\n");
+       42: 1026:		while(vt_aux)
+        -: 1027:		{
+       18: 1028:			at_aux = vt_aux->head->prox;
+        -: 1029:
+       18: 1030:			printf("\t\t%s\n", vt_aux->trans);
+       18: 1031:			printf("\t\t\t");
+       54: 1032:			while(at_aux)
+        -: 1033:			{	
+       18: 1034:				printf("%s  ", at_aux->pessoa);
+        -: 1035:
+       18: 1036:				at_aux = at_aux->prox;
+        -: 1037:			}
+        -: 1038:
+       18: 1039:			printf("\n");
+        -: 1040:			
+       18: 1041:			vt_aux = vt_aux->prox;
+        -: 1042:		}
+        -: 1043:
+        6: 1044:		printf("\tLISTA DE REQUERIDOS\n");
+        6: 1045:		no = v_aux->usuario.listaT_req->head->prox;
+       42: 1046:		while(no)
+        -: 1047:		{
+       18: 1048:			printf("\t\t%s/%s\n", no->trans, no->pessoa);
+        -: 1049:
+        -: 1050:
+       18: 1051:			no = no->prox;
+        -: 1052:		}
+        -: 1053:
+        6: 1054:		printf("\tLISTA HISTORICO\n");
+        6: 1055:		no = v_aux->usuario.listaT_his->head->prox;
+       42: 1056:		while(no)
+        -: 1057:		{
+       18: 1058:			printf("\t\t%s/%s\n", no->trans, no->pessoa);
+        -: 1059:
+        -: 1060:
+       18: 1061:			no = no->prox;
+        -: 1062:		}
+        6: 1063:		printf("\tAMIZADES\n");
+        -: 1064:		// imprime o endereço da lista de amizades 
+        6: 1065:		printf("\t\tHEAD: %p | ant: %p | prox: %p\n", v_aux->head,v_aux->head->ant,v_aux->head->prox);
+        -: 1066:		
+        6: 1067:		a_aux = v_aux->head->prox;
+        -: 1068:		
+       30: 1069:		while(a_aux)
+        -: 1070:		{
+       12: 1071:			printf("\t\t%s: %p | ant: %p | prox: %p\n",a_aux->amigo->usuario.nome,a_aux,a_aux->ant,a_aux->prox);
+       12: 1072:			a_aux = a_aux->prox;
+        -: 1073:		}
+        -: 1074:
+        6: 1075:		v_aux = v_aux->prox;
+        -: 1076:	}	
+        -: 1077:
+        1: 1078:}

@@ -82,7 +82,8 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 					if(verifica_requisitos(a_aux2->amigo, req_user, xp, trans) == TRUE)
 					{
 						adicionaNO((a_aux2->amigo->usuario.listaT_req),trans, user->usuario.nome);
-					}		
+					}	
+					a_aux2 = a_aux2->prox;	
 				}
 			}
 			a_aux = a_aux->prox;
@@ -170,7 +171,7 @@ int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 		if(!T_aux)
 			return FALSE;
 	}
-
+	
 	return TRUE;
 }
 

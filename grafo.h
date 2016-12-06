@@ -14,8 +14,8 @@ typedef struct user{
 	unsigned int cep;
 	unsigned int n_interesses;
 	char interesses[20][200];
-	int soma_aval;
-	int quant_aval;
+	float soma_aval;
+	float quant_aval;
 	p_grafo_trans grafoT; //Grafo de transações pendentes
 	int n_req;
 	p_listaT listaT_req; //Lista de requerimentos
@@ -86,4 +86,4 @@ p_vertice pesquisa_vertice (p_grafo G, char *x);
 
 p_aresta pesquisa_aresta(p_vertice  V, char *x);
 
-void imprime_tudo(p_grafo);
+void imprime_rede_social(p_grafo);

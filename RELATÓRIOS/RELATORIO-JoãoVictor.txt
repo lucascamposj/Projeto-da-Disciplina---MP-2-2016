@@ -1,0 +1,22 @@
+|19/11| |3h   | |Projetar|               |Discussão do grupo a respeito do trabalho e tomada de decisões|
+|23/11| |1h   | |Especificar as funções| |Funções de manipulação de arquivo e funções que tornam o grafo duplamente encadeado|
+|23/11| |2h   | |codificar módulo|      |Criação do módulo de teste|
+|23/11| |4h   | |Realizar os testes|    |Testando o módulo de teste e funções de arquivo|
+|23/11| |30min| |Realizar os testes|    |Utilização do cppcheck, valgrind e gcov| 
+|25/11| |6h   | |Codificar módulo|      |Interface com o terminal e inserção de menus|
+|27/11|	|6h   |	|Codificar módulo|      |Início do desenvolvimento das estruturas de transações|
+|03/12|	|3h   |	|Redigir casos de tese|    |Testes envolvendo transações|
+|03/12| |2h   |	|Revisar casos de teste|   |Testes envolvendo transações|
+|03/12|	|5h   |	|Revisar código do módulo| |Módulo com funções de manipulação de transações|
+|04/12| |4h   | |Codificar módulo|         |Testes envolvendo funções de transações|
+|04/12| |5h   | |Redigir casos de teste| |Testes envolvendo transações|
+|04/12| |4h   | |Codificar módulo| 	 |Manipulação de arquivos envolvendo transações|
+|05/12| |6h   | |Realizar Teste|	 |Testando manipulação de arquivos envolvendo transações|
+|05/12| |20min| |Rodar CPPCheck e Valgrind| |Correção de erros de memória|
+|05/12| |1h   | |Documentar Doxygen|        |Documentar todos os módulos|
+|05/12| |1h   |	|Especificar as funções|    | Especificar e comentar todas as funções|
+|05/12| |3h   | |Realizar os testes|        |Leitura de todos os arquivos|
+|06/12| |2h   | |Revisar casos de teste|    |Revisão com bugs na leitura de arquivo|
+|06/12| |3h   | |Códificar módulo|          |Corrigir erros de leitura de arquivos|
+|06/12| |4h   | |Realizar testes|           |Revisão de todos os testes|
+|06/12| |2h   | |Instrumentar via gcov|     | Testar mais de 80% das linhas de cada módulo|

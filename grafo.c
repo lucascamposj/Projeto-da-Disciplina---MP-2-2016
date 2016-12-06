@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "grafo.h"
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -128,20 +129,30 @@ int adiciona_usuario(p_grafo G, tp_user x)
 		if(x.grafoT)
 			p->usuario.grafoT = x.grafoT;
 		else
+		{
 			p->usuario.grafoT = cria_grafo_T();
+			assert(p->usuario.grafoT);
+		}
 		if(x.listaT_req)
 			p->usuario.listaT_req = x.listaT_req;
 		else
+		{
 			p->usuario.listaT_req = cria_listaT();
+			assert(p->usuario.listaT_req);
+		}
 		if(x.listaT_his)
 			p->usuario.listaT_his = x.listaT_his;
 		else
+		{
 			p->usuario.listaT_his = cria_listaT();
+			assert(p->usuario.listaT_his);
+		}
 		p->head = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a célula cabeça para a sua lista de arestas(amizades)
 		assert(p->head); // checa se foi de fato alocado espaço
 		p->ultimo = p->head;
 		p->head->ant = NULL;
 		p->head->prox = NULL;
+
 
 		return TRUE;
 	}
@@ -212,18 +223,20 @@ int edita_usuario(p_user user)
 			case '3':
 				printf("Digite a nova idade: ");
 	    		scanf("%d", &user->idade);
-
+	    		getchar();
 				break;
 			
 			case '4':
 				printf("Digite a nova escolaridade: ");
 	    		scanf("%d", &user->escolaridade);
+	    		getchar();
 
 				break;
 			
 			case '5':
 				printf("Digite o novo cep: ");
 	    		scanf("%d", &user->cep);
+	    		getchar();
 
 				break;
 			
@@ -265,6 +278,8 @@ int edita_usuario(p_user user)
 				break;
 
 			case 'x':
+				printf("Edicoes salvas.\n");
+				sleep(1);
 				sair = TRUE;
 				break;
 
@@ -733,7 +748,7 @@ int salva_grafo(p_grafo G)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
 		fprintf(arq, "%c %d %d %d ", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
-		fprintf(arq, "%d %d\n", v->usuario.soma_aval,v->usuario.quant_aval);
+		fprintf(arq, "%.1f %.1f\n", v->usuario.soma_aval,v->usuario.quant_aval);
 		fprintf(arq, "%d\n", v->usuario.n_interesses);
 		
 		for(j=0;j<v->usuario.n_interesses;j++)
@@ -831,9 +846,9 @@ p_grafo carrega_grafo()
 				fgetc(arq);
 				fscanf(arq,"%d", &user.cep);
 				fgetc(arq);
-				fscanf(arq,"%d", &user.soma_aval);
+				fscanf(arq,"%f", &user.soma_aval);
 				fgetc(arq);
-				fscanf(arq,"%d", &user.quant_aval);
+				fscanf(arq,"%f", &user.quant_aval);
 				fgetc(arq);
 				fscanf(arq,"%d", &user.n_interesses);
 				fgetc(arq);
@@ -950,7 +965,7 @@ p_grafo carrega_grafo()
 	return G;
 }
 
-void imprime_tudo(p_grafo G)
+void imprime_rede_social(p_grafo G)
 {
 	p_vertice v_aux = G->head->prox;
 	p_aresta a_aux;
@@ -964,10 +979,41 @@ void imprime_tudo(p_grafo G)
 		// imprime o nome e o endereço desse usuário, bem como o endereço do usuário anteror e posterior
 		printf("%s: %p | ant: %p | prox: %p\n", v_aux->usuario.nome,v_aux,v_aux->ant,v_aux->prox); 
 		// imprime as informações deste usuário(genero, idade, escolaridade, cep, interesses)
-		printf("\t%c\n", v_aux->usuario.genero);
-		printf("\t%d\n", v_aux->usuario.idade);
-		printf("\t%d\n", v_aux->usuario.escolaridade);
-		printf("\t%d\n", v_aux->usuario.cep);
+		printf("\tGenero:%c\n", v_aux->usuario.genero);
+		printf("\tIdade:%d\n", v_aux->usuario.idade);
+		printf("\tEscolaridade: ");
+		switch(v_aux->usuario.escolaridade)
+		{
+			case 1:
+				printf("Primeiro grau incompleto.\n");
+				break;
+			case 2:
+				printf("Primeiro grau completo.\n");
+			
+				break;
+			case 3:
+				printf("Segundo grau incompleto.\n");
+			
+				break;
+			case 4:
+				printf("Segundo grau completo.\n");
+			
+				break;
+			case 5:
+				printf("Superior incompleto.\n");
+			
+				break;
+			case 6:
+				printf("Pos-graduacao.\n");
+
+
+		}
+
+		printf("\tCEP:%d\n", v_aux->usuario.cep);
+		if(v_aux->usuario.quant_aval)
+			printf("\tAvaliacao:%.1f\n", v_aux->usuario.soma_aval/v_aux->usuario.quant_aval);
+		else
+			printf("Sem avaliacao.\n");
 		printf("\tInteresses:\n");
 		for(i = 0; i < v_aux->usuario.n_interesses; i++)
 		{
