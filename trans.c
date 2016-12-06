@@ -581,10 +581,9 @@ int salva_trans(p_listatrans T){
 void destroi_trans(p_listatrans T){
 	p_transacao p = T->head, p2 = NULL;
 	
-		/** 
-		\param T lista de transações cadastradas. 
-		*/
-
+	/** 
+	\param T lista de transações cadastradas. 
+	*/
 	while(p) // enquanto não chegar ao final da lista
 	{
 		p2 = p; 
@@ -592,7 +591,7 @@ void destroi_trans(p_listatrans T){
 		free(p2); // elimina-se esse item
 	}
 
-	free(T); // elimina-se a celula cabeça
+	free(T); // elimina-se a estrutura listaT
 }
 /*******************************************************
 *Função: Imprime Transações

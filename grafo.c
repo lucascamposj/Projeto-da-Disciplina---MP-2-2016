@@ -79,7 +79,7 @@ void destroi_grafo(p_grafo G)
 		destroi_grafo_T(v_aux->usuario.grafoT);
 		v_aux2 = v_aux;
 		v_aux = v_aux->prox;
-		free(v_aux2); // libere o véritce(usuário)
+		free(v_aux2); // libere o vértice(usuário)
 	}
 	free(G->head); // libera a célula cabeça do grafo
 	free(G); // libera o grafo
