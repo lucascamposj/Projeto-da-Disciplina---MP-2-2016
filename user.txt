@@ -1,0 +1,24 @@
+.5Lucas
+M 19 3 12 0 0
+2
+2oi
+5tchau
+*
+*
+Carona/Joao
+*
+Carona/Joao/1
+*
+4Joao
+*
+.4Joao
+M 29 3 4231 0 0
+0
+*
+*
+Carona/Joao
+*
+Carona/Lucas/0
+*
+5Lucas
+*

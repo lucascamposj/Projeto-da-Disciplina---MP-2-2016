@@ -154,7 +154,7 @@ int main(int argc, char const *argv[])
 			        scanf("%[^\n]s", string_1);
 			        getchar();
 			        printf("\n");
-			        user = pesquisa_vertice(G, string_1);// pesquisa o nome do usúário no grafo
+			        user = pesquisa_vertice(G, string_1);// pesquisa o nome do usuário no grafo
 			        if(user)
 			        {
 			          
@@ -176,11 +176,15 @@ int main(int argc, char const *argv[])
 							case 'O':
 								printf("\tGenero: Outros.\n");
 						}
-						printf("\tIdade:%d.\n", user->usuario.idade);
-						printf("\tEscolaridade:%d.\n", user->usuario.escolaridade);
-						printf("\tCEP:%d.\n", user->usuario.cep);
+						printf("\tIdade: %d\n", user->usuario.idade);
+						printf("\tEscolaridade: %d\n", user->usuario.escolaridade);
+						printf("\tCEP: %d\n", user->usuario.cep);
+						if(user->usuario.quant_aval)
+							printf("\tAvaliação: %d\n", (user->usuario.soma_aval/user->usuario.quant_aval));
+						else
+							printf("\tAvaliação Inexistente\n");
 						printf("Interesses:\n");
-						for(i=0;i<user->usuario.n_interesses;i++)
+						for(i = 0; i < user->usuario.n_interesses; i++)
 						{
 							printf("\t");
 							puts(user->usuario.interesses[i]);
@@ -202,7 +206,6 @@ int main(int argc, char const *argv[])
 								do
 				              	{
 					                sair = FALSE;
-					                
 					                system("clear");
 					                printf("***************OPCOES DE AMIZADES*********************\n");
 					                printf("*(1)Ver amigos.                                      *\n");
@@ -257,9 +260,8 @@ int main(int argc, char const *argv[])
 					                }
 				            	}while(sair == FALSE);
 				            	sair = FALSE;
-
 				            	break;
-
+				            //Transações
 				            case '2':
 					            do{	
 					            	sair = FALSE;
@@ -492,7 +494,7 @@ int main(int argc, char const *argv[])
 					                		printf("*****************************\n");
 					                		imprime_listaT(user->usuario.listaT_his, 1);
 					                		printf("*****************************\n");
-					            			printf("Deseja avaliar algum usuario que nao foi avaliado?\n (S)Sim\n Qualquer outra tecla para voltar.\n");
+					            			printf("Deseja avaliar algum usuario que nao foi avaliado?\n(S)Sim\n(N)Nao\n");
 					            			scanf("%c", &opcao);
 					            			getchar();
 					            			switch(opcao)
@@ -511,6 +513,7 @@ int main(int argc, char const *argv[])
 					            						amigo = pesquisa_vertice(G, string_1);
 					            						printf("Digite a nota(0 a 10): ");
 					            						scanf("%d", &nota);
+					            						getchar();
 					            						no->aval = 1; //Indica que usuário já foi avaliado
 					            						amigo->usuario.soma_aval+=nota;
 					            						amigo->usuario.quant_aval++;
@@ -546,7 +549,7 @@ int main(int argc, char const *argv[])
 				            case 'x':
 				            	sair = TRUE;
 				            	break;
-				        	}
+				        }
 			          	sair = FALSE;
 			        }
 			        else
@@ -605,6 +608,9 @@ int main(int argc, char const *argv[])
 			        	getchar();
 			        }
 			        printf("\n");
+			        new_user.grafoT = NULL;
+			        new_user.listaT_his = NULL;
+			        new_user.listaT_req = NULL;
 			        //Se adição foi bem sucedida
 			        if(adiciona_usuario(G, new_user))
 			        	printf("Usuário adicionado.\n");

@@ -53,11 +53,13 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 	{
 		while(v_aux) //percorre o grafo comparando os requisitos com todos os usuários
 		{
-			if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
-			{
-				//adiciona na lista de transações requeridas do usuário
-				adicionaNO((v_aux->usuario.listaT_req),trans, user->usuario.nome);
-			}
+			//verifica se o ponteiro não está apaontando para o usuário que pedir a transação
+			if(v_aux != user)	
+				if(verifica_requisitos(v_aux, req_user, xp, trans) == TRUE)
+				{
+					//adiciona na lista de transações requeridas do usuário
+					adicionaNO((v_aux->usuario.listaT_req),trans, user->usuario.nome);
+				}
 			v_aux = v_aux->prox;
 		}
 	}
@@ -113,7 +115,7 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 /** @brief Busca e convida usuários que se encaixam em certos requisitos a realizar uma
 * transação de acordo com a abrangência do convite.
 *	@param req_user Estrutura usuário base para comparação dos requisitos.
-*	@param user Ponteiro para o usuário que requisitou a transação.
+*	@param user Ponteiro para o usuário a ser avaliado.
 *	@param abran Flag que determina a abrangência da análise.
 *	@param xp Flag que determina se há necessidade de se avaliar a experiência dos usuários
 * com a transação em questão.
@@ -125,7 +127,7 @@ int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 {
 	p_noT T_aux = user->usuario.listaT_his->head->prox; //ponteiro auxiliar para verificar xp
 	int i;
-	
+
 	/*Todas as comparações verificam se não há valores padrões no req_user,
 	pois valores padrões indicam que o usuário não quer avaliar tal requesito*/
 

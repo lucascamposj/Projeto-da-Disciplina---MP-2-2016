@@ -125,9 +125,18 @@ int adiciona_usuario(p_grafo G, tp_user x)
 
 		p->usuario = x;
 
-		p->usuario.grafoT = x.grafoT;
-		p->usuario.listaT_req = x.listaT_req;
-		p->usuario.listaT_his = x.listaT_his;
+		if(x.grafoT)
+			p->usuario.grafoT = x.grafoT;
+		else
+			p->usuario.grafoT = cria_grafo_T();
+		if(x.listaT_req)
+			p->usuario.listaT_req = x.listaT_req;
+		else
+			p->usuario.listaT_req = cria_listaT();
+		if(x.listaT_his)
+			p->usuario.listaT_his = x.listaT_his;
+		else
+			p->usuario.listaT_his = cria_listaT();
 		p->head = (p_aresta)malloc(sizeof(tp_aresta)); // aloca-se a célula cabeça para a sua lista de arestas(amizades)
 		assert(p->head); // checa se foi de fato alocado espaço
 		p->ultimo = p->head;
@@ -723,8 +732,8 @@ int salva_grafo(p_grafo G)
 		for(i=0;i<strlen(v->usuario.nome); i++)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
-		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
-		
+		fprintf(arq, "%c %d %d %d ", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+		fprintf(arq, "%d %d\n", v->usuario.soma_aval,v->usuario.quant_aval);
 		fprintf(arq, "%d\n", v->usuario.n_interesses);
 		
 		for(j=0;j<v->usuario.n_interesses;j++)
@@ -822,7 +831,11 @@ p_grafo carrega_grafo()
 				fgetc(arq);
 				fscanf(arq,"%d", &user.cep);
 				fgetc(arq);
-				fscanf(arq, "%d", &user.n_interesses);
+				fscanf(arq,"%d", &user.soma_aval);
+				fgetc(arq);
+				fscanf(arq,"%d", &user.quant_aval);
+				fgetc(arq);
+				fscanf(arq,"%d", &user.n_interesses);
 				fgetc(arq);
 				for(i=0;i<user.n_interesses;i++)
 				{
@@ -918,17 +931,14 @@ p_grafo carrega_grafo()
 							if(feof(arq))
 								break;
 						}
-					fgetc(arq);
+					c = fgetc(arq);
 					do{
 						fscanf(arq, "%d", &size);
-						if((char)size == '*')
-							break;
 						fgets(amigo, size+1, arq);
-						if(strcmp(amigo,"*"))
+						if(strcmp(amigo,"*\n"))
 							adiciona_amizade(G, nome, amigo);
 						else{ 
 							break;
-							fgetc(arq);
 						}
 						fgetc(arq);
 					}while(!feof(arq));
