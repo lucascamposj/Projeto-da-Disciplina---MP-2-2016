@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g -I.
 DEPS = user.h trans.h grafo.h
 OBJ = user.o trans.o grafo.o
-GTEST =-test-coverage -fprofile-arcs
+GTEST =-fprofile-arcs -test-coverage
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -10,7 +10,8 @@ GTEST =-test-coverage -fprofile-arcs
 main: $(OBJ) menus_grafo.o
 	gcc -o $@ $^ $(CFLAGS)
 
-gtest: $(OBJ) GTEST.o
-	g++ $(GTEST) -o $@ $^ $(CFLAGS) -lgtest
+gtest:
+	g++ -fprofile-arcs -ftest-coverage -g GTEST.c grafo.c trans.c user.c -o main -lgtest
+
 clean:
 	rm -rf *o main

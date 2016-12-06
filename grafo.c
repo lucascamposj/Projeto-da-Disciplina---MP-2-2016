@@ -720,7 +720,7 @@ int salva_grafo(p_grafo G)
 	{
 		fprintf(arq, ".");
 		fprintf(arq, "%ld", strlen(v->usuario.nome));
-		for(int i=0;i<strlen(v->usuario.nome); i++)
+		for(i=0;i<strlen(v->usuario.nome); i++)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
 		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
