@@ -714,7 +714,7 @@ int salva_grafo(p_grafo G)
 
 
 	if(!(arq = fopen("user.txt", "w"))){
-		return FALSE
+		return FALSE;
 	}
 	while(v)
 	{

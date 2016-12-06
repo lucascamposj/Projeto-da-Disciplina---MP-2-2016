@@ -52,14 +52,6 @@ p_grafo cria_grafo();
 /*destrói grafo g*/
 void destroi_grafo(p_grafo G);
 
-/*verifica se x e y sao adjacentes em G*/
-int adjacente(p_grafo G, int x, int y);
-
-/* retorna lista de todos os vértices que podem ser visitados a partir de x
-(existe uma aresta que vai de x para este vértice)*/
-void vizinhos(p_grafo G,int x);
-
-
 /*adiciona vértice x no grafo G*/
 int adiciona_usuario(p_grafo G, tp_user x);
 

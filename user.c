@@ -124,7 +124,8 @@ void buscarequisitos(p_grafo G,tp_user req_user,p_vertice user,int abran,int xp,
 int verifica_requisitos(p_vertice user, tp_user req_user, int xp, char *trans)
 {
 	p_noT T_aux = user->usuario.listaT_his->head->prox; //ponteiro auxiliar para verificar xp
-
+	int i;
+	
 	/*Todas as comparações verificam se não há valores padrões no req_user,
 	pois valores padrões indicam que o usuário não quer avaliar tal requesito*/
 
