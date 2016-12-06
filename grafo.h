@@ -5,6 +5,7 @@ typedef struct aresta* p_aresta;
 typedef struct grafo* p_grafo;
 typedef struct user *p_user;
 
+//Estrutura de informações de um usuário
 typedef struct user{
 	char nome[50];
 	char genero;
@@ -15,10 +16,10 @@ typedef struct user{
 	char interesses[20][200];
 	int soma_aval;
 	int quant_aval;
-	p_grafo_trans grafoT;
+	p_grafo_trans grafoT; //Grafo de transações pendentes
 	int n_req;
-	p_listaT listaT_req;
-	p_listaT listaT_his;
+	p_listaT listaT_req; //Lista de requerimentos
+	p_listaT listaT_his; //Lista de histórico de transações
 } tp_user;
 
 typedef struct vertice
@@ -73,11 +74,11 @@ int adiciona_amizade(p_grafo G,char *x,char *y);
 /*remove a aresta que vai de x para y*/
 int remove_amizade(p_grafo G,char *x,char *y);
 
-int imprime_grafo(p_grafo G);
+void imprime_grafo(p_grafo G);
 
-int salva_grafo(p_grafo G);
+int salva_grafo(p_grafo G); //salva estrutura no arquivo user.txt
 
-p_grafo carrega_grafo();
+p_grafo carrega_grafo(); //carrega estrutura do arquivo user.txt
 
 
 

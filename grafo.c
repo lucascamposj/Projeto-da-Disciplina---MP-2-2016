@@ -14,14 +14,15 @@
 *Função: Cria Grafo
 *Descrição
 *	Inicializa uma estrutura de um Grafo.
-*Parâmetros
 *Valor retornado
 *	G - ponteiro para a estrutura Grafo inicializada.
-*Assertiva de entrada
-* --------------------
 *Assertiva de saida
 *	O ponteiro G não pode ter valor NULL.
 *********************************************************/
+
+/** @brief Função que inicializa uma estrutura grafo
+*	@return Retorna o ponteiro para uma estrutura grafo inicializada
+*/
 
 p_grafo cria_grafo()
 {
@@ -48,8 +49,13 @@ p_grafo cria_grafo()
 *Parâmetros
 *	G - Ponteiro para uma estrutura de grafo.
 *Assertiva de entrada
-*	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
+*	A estrutura do grafo necessita estar inicializada. 
+*	G não pode possuir o valor NULL.
 *********************************************************/
+
+/** @brief Realiza a liberação correta de memória de um Grafo.
+*	@param G Ponteiro para uma estrutura de grafo
+*/
 
 void destroi_grafo(p_grafo G)
 {
@@ -83,18 +89,25 @@ void destroi_grafo(p_grafo G)
 *Função: Adiciona usuário
 *Descrição
 *	Adiciona um usuário a Rede Social.
-*
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - As informações do usuário(tipo estrutura user).
-*
+*Valor retornado
+*	Retorna a macro TRUE caso a o usuário tenha sido inserido
+*de forma correta, caso contrário retorna a macro FALSE.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *	Nenhum campo de informação do usuário deve conter o caracter '*'.
-*
 *Assertiva de saída
 *	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
+
+/** @brief Adiciona um usuário a Rede Social.
+*	@param G Ponteiro para a estrutura de um grafo.
+*	@param x As informações do usuário (tipo estrutura user).
+*	@return Retorna a macro TRUE caso a o usuário tenha sido inserido
+*de forma correta, caso contrário retorna a macro FALSE.
+*/
 
 int adiciona_usuario(p_grafo G, tp_user x)
 {
@@ -134,14 +147,21 @@ int adiciona_usuario(p_grafo G, tp_user x)
 *	Edita um usuário da Rede Social.
 *Parâmetros
 *	user - ponteiro para o usuário que deseja-se editar
-*
+*Valor retornado
+*	Retorna a macro TRUE caso a o usuário tenha sido editado
+*de forma correta, caso contrário retorna a macro FALSE.
 *Assertiva de entrada
 *	o usuário deve existir no grafo.
 *	Nenhum campo de informação do usuário deve conter o caracter '*'.
-*
 *Assertiva de saída
 *	O usuário será inserido na rede social, caso ele ainda não esteja(checa se o nome já existe).
 *********************************************************/
+
+/** @brief Edita um usuário da Rede Social.
+*	@param user Ponteiro para o usuário que deseja-se editar.
+*	@return Retorna a macro TRUE caso a o usuário tenha sido editado
+*de forma correta, caso contrário retorna a macro FALSE.
+*/
 
 int edita_usuario(p_user user)
 {
@@ -250,11 +270,21 @@ int edita_usuario(p_user user)
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - nome do usuário a ser removido.
+*Valor retornado
+*	Retorna a macro TRUE caso a o usuário tenha sido removido
+*de forma correta, caso contrário retorna a macro FALSE.
 *Assertiva de entrada
 *	A estrutura do grafo necessitar estar inicializada. G não pode possuir o valor NULL.
 *Assertiva de saída
 *	Remove o usuário da rede social, caso ele exista(checa se o nome existe no grafo).
 *********************************************************/
+
+/** @brief Remove um usuário da rede social. Além disso, realiza a liberação correta de memória.
+*	@param G Ponteiro para a estrutura de um grafo.
+*	@param x Nome do usuário a ser removido.
+*	@return Retorna a macro TRUE caso a o usuário tenha sido removido
+*de forma correta, caso contrário retorna a macro FALSE.
+*/
 
 int remove_usuario(p_grafo G, char *x)
 {
@@ -327,12 +357,23 @@ int remove_usuario(p_grafo G, char *x)
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - Nome de um dos usuários.
-*	Y - Nome do outro usuário.
+*	y - Nome do outro usuário.
+*Valor retornado
+*	Retorna a macro TRUE caso a amizade tenha sido adicionada
+*de forma correta, caso contrário retorna a macro FALSE.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *Assertiva de saída
 *	Adiciona amizade, tanto de x com y, quanto de y com x. Isso só é feito de x e y existem na rede social.
 *********************************************************/
+
+/** @brief Adiciona amizade entre dois usuários.
+*	@param G Ponteiro para a estrutura de um grafo.
+*	@param x Nome de um dos usuários.
+*	@param y Nome do outro usuário.
+*	@return Retorna a macro TRUE caso a amizade tenha sido adicionada
+*de forma correta, caso contrário retorna a macro FALSE.
+*/
 
 int adiciona_amizade(p_grafo G,char *x, char *y)
 {
@@ -380,11 +421,22 @@ int adiciona_amizade(p_grafo G,char *x, char *y)
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - Nome de um usuário.
 *	y - Nome de um usuário.
+*Valor retornado
+*	Retorna a macro TRUE caso a amizade tenha sido removida
+*de forma correta, caso contrário retorna a macro FALSE.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *Assertiva de saída
 *	Remove a amizade entre o usuário x e y, caso os 2 nomes existam na rede social.
 *********************************************************/
+
+/** @brief Remove amizade entre dois usuários.
+*	@param G Ponteiro para a estrutura de um grafo.
+*	@param x Nome de um usuário.
+*	@param y Nome de um usuário.
+*	@return Retorna a macro TRUE caso a amizade tenha sido removida
+*de forma correta, caso contrário retorna a macro FALSE.
+*/
 
 int remove_amizade(p_grafo G,char *x, char *y)
 {
@@ -434,12 +486,20 @@ int remove_amizade(p_grafo G,char *x, char *y)
 *Parâmetros
 *	G - Estrutura de um grafo.
 *Valor retornado
-*	Retorna um valor into que indica se a rede socil está vazia ou não.
+*	Retorna um valor into que indica se a rede social está vazia ou não.
 *	True - caso a rede esteja vazia.
 *	False - caso contrário.
 *Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *********************************************************/
+
+/** @brief Verifica se uma esturutra grafo está vazia.
+*	@param G Estrutura de um grafo.
+*	@return Retorna um valor into que indica se a rede social está vazia ou não.
+*	True - caso a rede esteja vazia.
+*	False - caso contrário.
+*/
+
 int grafo_vazio(p_grafo G)
 {
 	if(G->head == G->ultimo) // se a célula cabeça é o fim do grafo
@@ -461,6 +521,14 @@ int grafo_vazio(p_grafo G)
 *Assertiva de entrada
 *	A estrutura do vértice necessita estar inicializada. A não pode possuir o valor NULL.
 *********************************************************/
+
+/** @brief Verifica se um usuário não possui amizades.
+*	@param A Ponteiro para a estrutura de um vértice.
+*	@return Retorna um valor into que indica se um vértice não possui arestas.
+*	True - Caso o vértice não possua arestas.
+*	False - Caso contrário.
+*/
+
 int vertice_vazio(p_vertice A)
 {
 	if(A->head == A->ultimo) // se a célula cabeça é o fim do grafo
@@ -472,7 +540,7 @@ int vertice_vazio(p_vertice A)
 *Função: Pesquisa Vertice
 *Descrição
 *	Usada em outras funções, esta realiza uma busca na rede para verificar se, dado um nome, 
-*	existe um usuário com este nome.
+*existe um usuário com este nome.
 *Parâmetros
 *	G - Ponteiro para a estrutura de um grafo.
 *	x - Nome de um usuário.
@@ -484,6 +552,15 @@ int vertice_vazio(p_vertice A)
 Assertiva de entrada
 *	A estrutura do grafo necessita estar inicializada. G não pode possuir o valor NULL.
 *********************************************************/
+
+/** @brief Usada em outras funções, esta realiza uma busca na rede para verificar se, dado um nome, 
+*existe um usuário com este nome.
+*	@param G Ponteiro para a estrutura de um grafo.
+*	@param x Nome de um usuário.
+*	@return p - Ponteiro para o usuário com este nome(foi encontrado).
+*	NULL - Este nome não existe na rede social(não foi encontrado).
+*/
+
 p_vertice pesquisa_vertice (p_grafo G, char *x){
 	p_vertice p = G->head->prox;
 
@@ -524,6 +601,15 @@ p_vertice pesquisa_vertice (p_grafo G, char *x){
 *	V não pode ser NULL; deve estar inicializado.
 *	x deve ser diferente de NULL.			
 *********************************************************/
+
+/** @brief Realiza uma busca na lista de amizades de um dado usuário(caso ele exista), em busca de
+*	uma determinada amizade.
+*	@param V Ponteiro para o usuário.
+*	@param x Nome de um usuário(suposta amizade).
+*	@return p - Ponteiro para o usuário com este nome(foi encontrada a amizade).
+*	NULL - Este nome não existe na lista de amizades deste usuário(não foi encontrado).
+*/
+
 p_aresta pesquisa_aresta(p_vertice  V, char *x){
 	p_aresta p = V->head->prox;
 
@@ -558,7 +644,13 @@ p_aresta pesquisa_aresta(p_vertice  V, char *x){
 *Assertiva de entrada
 *	o grafo deve estar inicializado.		
 *********************************************************/
-int imprime_grafo(p_grafo G)
+
+/** @brief Imprime todas as informações da rede social, bem como:
+*	Usuários, amizades e transações.
+*	@param G ponteiro para estrutura grafo.
+*/
+
+void imprime_grafo(p_grafo G)
 {
 	p_vertice v_aux = G->head->prox;
 	p_aresta a_aux;
@@ -597,10 +689,19 @@ int imprime_grafo(p_grafo G)
 *
 *Parâmetros
 *	G - ponteiro para estrutura grafo.	
-*
+*Valor retornado
+*	Retorna a macro TRUE caso o grafo tenha salvo corretamente retorna TRUE,
+*caso contrário, retorna FALSE.
 *Assertiva de entrada
 *	o grafo deve estar inicializado.		
 *********************************************************/
+
+/** @brief Salva as informações da rede social(usuários e amizades) num arquivo(user.txt)
+*	@param G Ponteiro para estrutura grafo.
+*	@return Retorna a macro TRUE caso o grafo tenha salvo corretamente retorna TRUE,
+*	caso contrário, retorna FALSE.
+*/
+
 int salva_grafo(p_grafo G)
 {
 	FILE *arq;
@@ -612,7 +713,9 @@ int salva_grafo(p_grafo G)
  	int i,j;
 
 
-	arq = fopen("user.txt", "w");
+	if(!(arq = fopen("user.txt", "w"))){
+		return FALSE
+	}
 	while(v)
 	{
 		fprintf(arq, ".");
@@ -620,7 +723,7 @@ int salva_grafo(p_grafo G)
 		for(int i=0;i<strlen(v->usuario.nome); i++)
 			fprintf(arq, "%c", v->usuario.nome[i]);
 		fprintf(arq,"\n");
-		fprintf(arq, "%c %d %d %d \n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
+		fprintf(arq, "%c %d %d %d\n", v->usuario.genero, v->usuario.idade, v->usuario.escolaridade,v->usuario.cep);
 		
 		fprintf(arq, "%d\n", v->usuario.n_interesses);
 		
@@ -674,10 +777,14 @@ int salva_grafo(p_grafo G)
 *Função: Carrega grafo
 *Descrição
 *	Lê o arquivo "user.txt" e armazena suas informações no grafo(rede social)
-*
 *Valor retornado
 *	G - Retorna o grafo contendo as informações do user.txt(rede social)		
 *********************************************************/
+
+/** @brief Lê o arquivo "user.txt" e armazena suas informações no grafo(rede social)
+*	@return Retorna o grafo contendo as informações do user.txt(rede social)
+*/
+
 p_grafo carrega_grafo()
 {
 	FILE *arq;
@@ -726,10 +833,11 @@ p_grafo carrega_grafo()
 				fgetc(arq); //pega separador
 				fgetc(arq);
 				user.grafoT = cria_grafo_T();
-				c = 0;
+				
 				while(!feof(arq))
 				{
 					i = 0;	
+					c = 0;
 					while((c = fgetc(arq)) != '/' && c != '\n'){
 						s[i] = c;
 						i++;
@@ -813,6 +921,8 @@ p_grafo carrega_grafo()
 					fgetc(arq);
 					do{
 						fscanf(arq, "%d", &size);
+						if((char)size == '*')
+							break;
 						fgets(amigo, size+1, arq);
 						if(strcmp(amigo,"*"))
 							adiciona_amizade(G, nome, amigo);

@@ -7,7 +7,7 @@ typedef struct arestaT* p_arestaT;
 typedef struct noT* p_noT;
 typedef struct listaT* p_listaT;
 
-
+//Estrutura referente a um tipo de transação
 typedef struct transacao
 {
 	char trans[50];
@@ -22,7 +22,7 @@ typedef struct lista_trans
 	p_transacao ultimo;
 } tp_listatrans;
 
-/*GRAFO*/
+//Grafo que armazena transações pendentes de um usuário
 typedef struct verticeT
 {
 	char trans[50];
@@ -52,9 +52,7 @@ typedef struct grafo_trans
 
 }tp_grafo_trans;
 
-
-/*LISTA T*/
-
+//Lista de transações requeridas ou de histórico de um usuário
 typedef struct noT
 {
 	char trans[50];
@@ -94,7 +92,7 @@ p_transacao pesquisa_trans(p_listatrans, char *);
 
 void imprime_trans(p_listatrans);
 
-/*GRAFO*/
+/*GRAFO T*/
 
 p_grafo_trans cria_grafo_T();
 
@@ -110,7 +108,7 @@ void remove_vertice_T(p_grafo_trans, char *);
 
 void imprime_grafoT(p_grafo_trans );
 
-/*LISTA*/
+/*LISTA T*/
 
 p_noT adicionaNO(p_listaT, char *, char *);
 
